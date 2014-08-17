@@ -1,0 +1,10 @@
+d3.core.config.title=D³ configuration screen
+
+d3.core.config.core=Core config
+d3.core.config.core.tooltip=Applies to all D³ mods
+
+d3.core.config.debug=Debug mode
+d3.core.config.debug.tooltip=Please enable before making a bug report.
+
+d3.core.config.sillyness=Enable sillyness
+d3.core.config.sillyness.tooltip=Please don't disable, unless you want to piss off the D³ crew :p

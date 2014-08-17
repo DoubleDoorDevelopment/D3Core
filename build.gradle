@@ -1,0 +1,149 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+        maven {
+            name = "sonatype"
+            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+        classpath group: 'com.github.rodionmoiseev.gradle.plugins', name: 'idea-utils', version: '0.2'
+    }
+}
+
+import groovy.json.*
+
+configurations {
+    compile
+    deployJars
+}
+
+apply plugin: "forge"
+apply plugin: "maven"
+apply plugin: "idea-utils"
+
+group = "net.doubledoordev.d3core"
+version = "1.0.0"
+
+targetCompatibility = 1.7
+sourceCompatibility = 1.7
+
+archivesBaseName = 'D3Core'
+def githuborg = 'DoubleDoorDevelopment'
+def description = 'DoubleDoor Development Core'
+minecraft {
+    version = "1.7.10-10.13.0.1190"
+    runDir = "jars"
+}
+
+if (System.getenv().BUILD_NUMBER != null) version += "." + System.getenv().BUILD_NUMBER
+def builder = new groovy.json.JsonBuilder()
+builder (version: version, mcversion: project.minecraft.version, apiversion: project.minecraft.apiVersion)
+new File("versions.json").write(builder.toPrettyString())
+
+processResources {
+    from(sourceSets.main.resources.srcDirs) {
+        include '**/*.info'
+        expand 'version':project.version, 'mcversion':project.minecraft.version, 'modid':project.archivesBaseName, 'githuborg':githuborg, 'description':description
+    }
+
+    from(sourceSets.main.resources.srcDirs) {
+        exclude '**/*.info'
+    }
+}
+
+task sourcesJar(type: Jar) {
+    from "LICENSE.txt"
+    from sourceSets.main.allSource
+    classifier = 'src'
+    appendix = project.minecraft.version
+}
+
+task deobfJar(type: Jar) {
+    from "LICENSE.txt"
+    from sourceSets.main.output
+    from (sourceSets.main.allSource.srcDirs) {
+        include '**/*.java'
+    }
+	classifier = 'dev'
+    appendix = project.minecraft.version
+}
+
+jar {
+    from "LICENSE.txt"
+    appendix = project.minecraft.version
+}
+
+artifacts {
+	archives jar
+    archives sourcesJar
+    archives deobfJar
+}
+
+idea {
+    project {
+        copyright {
+            name = 'New BSD License'
+            license = file('LICENSE.txt')
+        }
+    }
+}
+
+uploadArchives {
+    String repo = "/var/www/ddd/maven/";
+    if (new File(repo).exists()) {
+        repositories {
+            mavenDeployer {
+                repository(url: "file://localhost" + repo)
+                pom {
+                    groupId = project.group
+                    version = project.minecraft.version + "-" + project.version
+                    artifactId = project.archivesBaseName
+                    project {
+                        name project.archivesBaseName
+                        packaging 'jar'
+                        description = description
+                        url 'https://github.com/' + githuborg + '/' + project.archivesBaseName
+
+                        scm {
+                            url 'https://github.com/' + githuborg + '/' + project.archivesBaseName
+                            connection 'scm:git:git://github.com/' + githuborg + '/' + project.archivesBaseName + '.git'
+                            developerConnection 'scm:git:git@github.com:' + githuborg + '/' + project.archivesBaseName + '.git'
+                        }
+
+                        issueManagement {
+                            system 'github'
+                            url 'https://github.com/' + githuborg + '/' + project.archivesBaseName + '/issues'
+                        }
+
+                        licenses  {
+                            license  {
+                                name 'New BSD License'
+                                url 'https://raw.github.com/' + githuborg + '/' + project.archivesBaseName + '/master/LICENCE.txt'
+                                distribution 'repo'
+                            }
+                        }
+
+                        developers {
+                            developer {
+                                id 'Dries007'
+                                name 'Dries007'
+                                roles { role 'developer' }
+                            }
+                            developer {
+                                id 'Claycorp'
+                                name 'Claycorp'
+                                roles { role 'developer' }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
