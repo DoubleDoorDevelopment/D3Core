@@ -37,19 +37,15 @@ import cpw.mods.fml.client.config.GuiConfig;
 import cpw.mods.fml.client.config.IConfigElement;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
-import net.doubledoordev.d3core.D3Core;
 import net.doubledoordev.d3core.util.CoreConstants;
 import net.doubledoordev.d3core.util.ID3Mod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
-import net.minecraftforge.common.config.ConfigElement;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import static net.doubledoordev.d3core.util.CoreConstants.MODID;
 
 /**
  * @author Dries007
@@ -66,9 +62,6 @@ public class ModConfigGuiFactory implements IModGuiFactory
         private static List<IConfigElement> getConfigElements()
         {
             List<IConfigElement> list = new ArrayList<>();
-
-            list.add(new ConfigElement(D3Core.getConfiguration().getCategory(MODID.toLowerCase())));
-
             for (ModContainer modContainer : Loader.instance().getActiveModList())
             {
                 if (modContainer.getMod() instanceof ID3Mod)
@@ -76,7 +69,6 @@ public class ModConfigGuiFactory implements IModGuiFactory
                     ((ID3Mod) modContainer.getMod()).addConfigElements(list);
                 }
             }
-
             return list;
         }
     }

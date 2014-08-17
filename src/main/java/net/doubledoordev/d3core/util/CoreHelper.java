@@ -35,15 +35,45 @@ package net.doubledoordev.d3core.util;
 /**
  * @author Dries007
  */
-public class CoreConstants
+public class CoreHelper
 {
-    public static final String MODID            = "D3Core";
-    public static final String NAME             = "D³ Core";
-    public static final String BASEURL          = "http://doubledoordev.net/";
-    public static final String PERKSURL         = BASEURL + "perks.json";
-    public static final String MAVENURL         = BASEURL + "maven/";
-    /**
-     * @see net.doubledoordev.d3core.client.ModConfigGuiFactory
-     */
-    public static final String MOD_GUI_FACTORY = "net.doubledoordev.d3core.client.ModConfigGuiFactory";
+    private CoreHelper()
+    {
+    }
+
+    public static class ModUpdateDate
+    {
+        private final String name;
+        private final String modId;
+        private final String currentVersion;
+        private final String latestVersion;
+
+        public ModUpdateDate(String name, String modId, String currentVersion, String latestVersion)
+        {
+            this.name = name;
+            this.modId = modId;
+            this.currentVersion = currentVersion;
+            this.latestVersion = latestVersion;
+        }
+
+        public String getName()
+        {
+            return name;
+        }
+
+        public String getModId()
+        {
+            return modId;
+        }
+
+        public String getCurrentVersion()
+        {
+            return currentVersion;
+        }
+
+        public String getLatestVersion()
+        {
+            return latestVersion;
+        }
+    }
 }

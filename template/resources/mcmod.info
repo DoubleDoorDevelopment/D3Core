@@ -1,8 +1,8 @@
 {
   "modListVersion": 2,
   "modList": [{
-    "modid": "D3Core",
-    "name": "D3Core",
+    "modid": "${modid}",
+    "name": "${modid}",
     "description": "${description}",
     "version": "${version}",
     "mcversion": "${mcversion}",

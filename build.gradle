@@ -48,12 +48,7 @@ new File("versions.json").write(builder.toPrettyString())
 
 processResources {
     from(sourceSets.main.resources.srcDirs) {
-        include '**/*.info'
-        expand 'version':project.version, 'mcversion':project.minecraft.version, 'modid':project.archivesBaseName, 'githuborg':githuborg, 'description':description
-    }
-
-    from(sourceSets.main.resources.srcDirs) {
-        exclude '**/*.info'
+        expand 'version':project.version, 'mcversion':project.minecraft.version, 'modid':project.archivesBaseName, 'githuborg':githuborg, 'description':description, 'group':project.group, 'artifactId':project.archivesBaseName
     }
 }
 
