@@ -39,12 +39,14 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.versioning.ArtifactVersion;
 import cpw.mods.fml.common.versioning.DefaultArtifactVersion;
 import net.doubledoordev.d3core.util.CoreHelper;
 import net.doubledoordev.d3core.util.DevPerks;
 import net.doubledoordev.d3core.util.ID3Mod;
+import net.minecraft.util.IChatComponent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.common.config.Configuration;
@@ -57,7 +59,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import java.util.TreeSet;
 
 import static net.doubledoordev.d3core.util.CoreConstants.*;
@@ -80,6 +81,7 @@ public class D3Core implements ID3Mod
 
     private boolean debug = false;
     private boolean sillyness = true;
+    private boolean updateWarning = true;
 
     private List<CoreHelper.ModUpdateDate> updateDateList = new ArrayList<>();
 
@@ -104,41 +106,34 @@ public class D3Core implements ID3Mod
                 if (modContainer instanceof FMLModContainer && modContainer.getMod() instanceof ID3Mod)
                 {
                     if (debug()) logger.info(String.format("[%s] Found a D3 Mod!", modContainer.getModId()));
-                    Properties properties = ((FMLModContainer) modContainer).searchForVersionProperties();
-                    if (properties != null && properties.containsKey(modContainer.getModId() + ".group") && properties.containsKey(modContainer.getModId() + ".artifactId"))
+
+                    TreeSet<ArtifactVersion> availableVersions = new TreeSet<>();
+
+                    String group = GROUP + modContainer.getModId().toLowerCase();
+                    String artifactId = modContainer.getModId();
+                    if (debug()) logger.info(String.format("[%s] Group: %s ArtifactId: %s", modContainer.getModId(), group, artifactId));
+
+                    URL url = new URL(MAVENURL + group.replace('.', '/') + '/' + artifactId + "/maven-metadata.xml");
+                    if (debug()) logger.info(String.format("[%s] Maven URL: %s", modContainer.getModId(), url));
+
+                    DocumentBuilder builder = dbf.newDocumentBuilder();
+                    Document document = builder.parse(url.toURI().toString());
+                    NodeList list = document.getDocumentElement().getElementsByTagName("version");
+                    for (int i = 0; i < list.getLength(); i++)
                     {
-                        TreeSet<ArtifactVersion> availableVersions = new TreeSet<>();
-
-                        String group = (String) properties.get(modContainer.getModId() + ".group");
-                        String artifactId = (String) properties.get(modContainer.getModId() + ".artifactId");
-                        if (debug()) logger.info(String.format("[%s] Group: %s ArtifactId: %s", modContainer.getModId(), group, artifactId));
-
-                        URL url = new URL(MAVENURL + group.replace('.', '/') + '/' + artifactId + "/maven-metadata.xml");
-                        if (debug()) logger.info(String.format("[%s] Maven URL: %s", modContainer.getModId(), url));
-
-                        DocumentBuilder builder = dbf.newDocumentBuilder();
-                        Document document = builder.parse(url.toURI().toString());
-                        NodeList list = document.getDocumentElement().getElementsByTagName("version");
-                        for (int i = 0; i < list.getLength(); i++)
+                        String version = list.item(i).getFirstChild().getNodeValue();
+                        if (version.startsWith(Loader.MC_VERSION + "-"))
                         {
-                            String version = list.item(i).getFirstChild().getNodeValue();
-                            if (version.startsWith(Loader.MC_VERSION + "-"))
-                            {
-                                availableVersions.add(new DefaultArtifactVersion(version.replace(Loader.MC_VERSION + "-", "")));
-                            }
-                        }
-                        DefaultArtifactVersion current = new DefaultArtifactVersion(modContainer.getVersion().replace(Loader.MC_VERSION + "-", ""));
-
-                        if (debug()) logger.info(String.format("[%s] Current: %s Latest: %s All versions for MC %s: %s", modContainer.getModId(), current, availableVersions.last(), Loader.MC_VERSION, availableVersions));
-
-                        if (current.compareTo(availableVersions.last()) > 0)
-                        {
-                            updateDateList.add(new CoreHelper.ModUpdateDate(modContainer.getName(), modContainer.getModId(), current.toString(), availableVersions.last().toString()));
+                            availableVersions.add(new DefaultArtifactVersion(version.replace(Loader.MC_VERSION + "-", "")));
                         }
                     }
-                    else
+                    DefaultArtifactVersion current = new DefaultArtifactVersion(modContainer.getVersion().replace(Loader.MC_VERSION + "-", ""));
+
+                    if (debug()) logger.info(String.format("[%s] Current: %s Latest: %s All versions for MC %s: %s", modContainer.getModId(), current, availableVersions.last(), Loader.MC_VERSION, availableVersions));
+
+                    if (current.compareTo(availableVersions.last()) < 0)
                     {
-                        logger.info("D3 Mod " + modContainer.getModId() + " doesn't have the appropriate properties for version checks.");
+                        updateDateList.add(new CoreHelper.ModUpdateDate(modContainer.getName(), modContainer.getModId(), current.toString(), availableVersions.last().toString()));
                     }
                 }
             }
@@ -151,12 +146,25 @@ public class D3Core implements ID3Mod
     }
 
     @Mod.EventHandler
-    public void init(FMLPostInitializationEvent event)
+    public void postInit(FMLPostInitializationEvent event)
     {
         for (CoreHelper.ModUpdateDate updateDate : updateDateList)
         {
             logger.warn(String.format("Update available for %s (%s)! Current version: %s New version: %s. Please update ASAP!", updateDate.getName(), updateDate.getModId(), updateDate.getCurrentVersion(), updateDate.getLatestVersion()));
         }
+    }
+
+    @SubscribeEvent
+    public void nameFormatEvent(PlayerEvent.PlayerLoggedInEvent event)
+    {
+        if (!updateWarning) return;
+
+        event.player.addChatComponentMessage(IChatComponent.Serializer.func_150699_a("{\"text\":\"\",\"extra\":[{\"text\":\"Updates available for these mods:\",\"color\":\"gold\"}]}"));
+        for (CoreHelper.ModUpdateDate updateDate : updateDateList)
+        {
+            event.player.addChatComponentMessage(IChatComponent.Serializer.func_150699_a(String.format("{\"text\":\"\",\"extra\":[{\"text\":\"%s: %s -> %s\"}]}", updateDate.getName(), updateDate.getCurrentVersion(), updateDate.getLatestVersion())));
+        }
+        event.player.addChatComponentMessage(IChatComponent.Serializer.func_150699_a("{\"text\":\"\",\"extra\":[{\"text\":\"Download here!\",\"color\":\"gold\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"http://doubledoordev.net\"}},{\"text\":\" <- That is a link btw :p\"}]}"));
     }
 
     @SubscribeEvent
@@ -178,6 +186,7 @@ public class D3Core implements ID3Mod
 
         debug = configuration.getBoolean("debug", MODID, debug, "Enable debug mode", "d3.core.config.debug");
         sillyness = configuration.getBoolean("sillyness", MODID, sillyness, "Enable sillyness", "d3.core.config.sillyness");
+        updateWarning = configuration.getBoolean("updateWarning", MODID, updateWarning, "Allow update warnings on login", "d3.core.config.updateWarning");
 
         if (sillyness) MinecraftForge.EVENT_BUS.register(getDevPerks());
         else MinecraftForge.EVENT_BUS.unregister(getDevPerks());

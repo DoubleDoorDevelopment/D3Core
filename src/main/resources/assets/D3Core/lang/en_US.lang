@@ -8,3 +8,6 @@ d3.core.config.debug.tooltip=Please enable before making a bug report.
 
 d3.core.config.sillyness=Enable sillyness
 d3.core.config.sillyness.tooltip=Please don't disable, unless you want to piss off the D³ crew :p
+
+d3.core.config.updateWarning=Update warnings
+d3.core.config.updateWarning.tooltip=Please don't disable, unless you are on a modpack.

@@ -42,6 +42,7 @@ public class CoreConstants
     public static final String BASEURL          = "http://doubledoordev.net/";
     public static final String PERKSURL         = BASEURL + "perks.json";
     public static final String MAVENURL         = BASEURL + "maven/";
+    public static final String GROUP            = "net.doubledoordev.";
     /**
      * @see net.doubledoordev.d3core.client.ModConfigGuiFactory
      */
