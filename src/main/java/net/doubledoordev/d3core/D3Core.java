@@ -109,7 +109,8 @@ public class D3Core implements ID3Mod
 
                     TreeSet<ArtifactVersion> availableVersions = new TreeSet<>();
 
-                    String group = GROUP + modContainer.getModId().toLowerCase();
+                    //                     |<---------------------------------- Camel case hackery ---------------------------------->|
+                    String group = GROUP + modContainer.getModId().substring(0, 1).toLowerCase() + modContainer.getModId().substring(1);
                     String artifactId = modContainer.getModId();
                     if (debug()) logger.info(String.format("[%s] Group: %s ArtifactId: %s", modContainer.getModId(), group, artifactId));
 
@@ -157,7 +158,7 @@ public class D3Core implements ID3Mod
     @SubscribeEvent
     public void nameFormatEvent(PlayerEvent.PlayerLoggedInEvent event)
     {
-        if (!updateWarning) return;
+        if (!updateWarning || updateDateList.isEmpty()) return;
 
         event.player.addChatComponentMessage(IChatComponent.Serializer.func_150699_a("{\"text\":\"\",\"extra\":[{\"text\":\"Updates available for these mods:\",\"color\":\"gold\"}]}"));
         for (CoreHelper.ModUpdateDate updateDate : updateDateList)
