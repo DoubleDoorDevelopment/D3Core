@@ -109,9 +109,8 @@ public class D3Core implements ID3Mod
 
                     TreeSet<ArtifactVersion> availableVersions = new TreeSet<>();
 
-                    //                     |<---------------------------------- Camel case hackery ---------------------------------->|
-                    String group = GROUP + modContainer.getModId().substring(0, 1).toLowerCase() + modContainer.getModId().substring(1);
-                    String artifactId = modContainer.getModId();
+                    String group = modContainer.getMod().getClass().getPackage().getName();
+                    String artifactId = modContainer.getName();
                     if (debug()) logger.info(String.format("[%s] Group: %s ArtifactId: %s", modContainer.getModId(), group, artifactId));
 
                     URL url = new URL(MAVENURL + group.replace('.', '/') + '/' + artifactId + "/maven-metadata.xml");
