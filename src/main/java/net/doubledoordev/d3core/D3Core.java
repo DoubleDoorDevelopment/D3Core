@@ -185,7 +185,7 @@ public class D3Core implements ID3Mod
         configuration.setCategoryLanguageKey(MODID, "d3.core.config.core").setCategoryComment(MODID, LanguageRegistry.instance().getStringLocalization("d3.core.config.core"));
 
         debug = configuration.getBoolean("debug", MODID, debug, "Enable debug mode", "d3.core.config.debug");
-        sillyness = configuration.getBoolean("sillyness", MODID, sillyness, "Enable sillyness", "d3.core.config.sillyness");
+        sillyness = configuration.getBoolean("sillyness", MODID, sillyness, "Enable sillyness\nBut seriously, you can disable name changes, drops and block helmets with this setting.", "d3.core.config.sillyness");
         updateWarning = configuration.getBoolean("updateWarning", MODID, updateWarning, "Allow update warnings on login", "d3.core.config.updateWarning");
 
         if (sillyness) MinecraftForge.EVENT_BUS.register(getDevPerks());
