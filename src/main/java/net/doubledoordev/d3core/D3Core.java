@@ -188,8 +188,15 @@ public class D3Core implements ID3Mod
         sillyness = configuration.getBoolean("sillyness", MODID, sillyness, "Enable sillyness\nBut seriously, you can disable name changes, drops and block helmets with this setting.", "d3.core.config.sillyness");
         updateWarning = configuration.getBoolean("updateWarning", MODID, updateWarning, "Allow update warnings on login", "d3.core.config.updateWarning");
 
-        if (sillyness) MinecraftForge.EVENT_BUS.register(getDevPerks());
-        else MinecraftForge.EVENT_BUS.unregister(getDevPerks());
+        try
+        {
+            if (sillyness) MinecraftForge.EVENT_BUS.register(getDevPerks());
+            else MinecraftForge.EVENT_BUS.unregister(getDevPerks());
+        }
+        catch (NullPointerException e)
+        {
+            // Noop. Forge, fix your shit :p
+        }
 
         if (configuration.hasChanged()) configuration.save();
     }
