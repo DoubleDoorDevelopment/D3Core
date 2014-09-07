@@ -47,7 +47,6 @@ import net.doubledoordev.d3core.util.CoreHelper;
 import net.doubledoordev.d3core.util.DevPerks;
 import net.doubledoordev.d3core.util.ID3Mod;
 import net.minecraft.util.IChatComponent;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.common.config.Configuration;
 import org.apache.logging.log4j.Logger;
@@ -187,16 +186,7 @@ public class D3Core implements ID3Mod
         debug = configuration.getBoolean("debug", MODID, debug, "Enable debug mode", "d3.core.config.debug");
         sillyness = configuration.getBoolean("sillyness", MODID, sillyness, "Enable sillyness\nBut seriously, you can disable name changes, drops and block helmets with this setting.", "d3.core.config.sillyness");
         updateWarning = configuration.getBoolean("updateWarning", MODID, updateWarning, "Allow update warnings on login", "d3.core.config.updateWarning");
-
-        try
-        {
-            if (sillyness) MinecraftForge.EVENT_BUS.register(getDevPerks());
-            else MinecraftForge.EVENT_BUS.unregister(getDevPerks());
-        }
-        catch (NullPointerException e)
-        {
-            // Noop. Forge, fix your shit :p
-        }
+        getDevPerks().update(sillyness);
 
         if (configuration.hasChanged()) configuration.save();
     }

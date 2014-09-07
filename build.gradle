@@ -90,11 +90,12 @@ idea {
 }
 
 uploadArchives {
-    String repo = "/var/www/ddd/maven/";
-    if (new File(repo).exists()) {
+    if (project.hasProperty("dddUser") && project.hasProperty("dddPass")) {
         repositories {
             mavenDeployer {
-                repository(url: "file://localhost" + repo)
+                repository(url: "http://doubledoordev.net:8081/artifactory/mods") {
+                    authentication(userName: dddUser, password: dddPass)
+                }
                 pom {
                     groupId = project.group
                     version = project.minecraft.version + "-" + project.version

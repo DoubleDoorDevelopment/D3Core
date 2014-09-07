@@ -32,12 +32,14 @@ package net.doubledoordev.d3core.util;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.GameData;
 import net.doubledoordev.d3core.D3Core;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import org.apache.commons.io.IOUtils;
@@ -95,7 +97,7 @@ public class DevPerks
     }
 
     @SubscribeEvent
-    public void nameFormatEvent(PlayerEvent.Clone event)
+    public void cloneEvent(PlayerEvent.Clone event)
     {
         try
         {
@@ -136,6 +138,28 @@ public class DevPerks
                     event.drops.add(new EntityItem(event.entityPlayer.getEntityWorld(), event.entityPlayer.posX, event.entityPlayer.posY, event.entityPlayer.posZ, new ItemStack(GameData.getItemRegistry().getObject(name), size, meta)));
                 }
             }
+        }
+        catch (Exception e)
+        {
+            if (D3Core.debug()) e.printStackTrace();
+        }
+    }
+
+    public void update(boolean sillyness)
+    {
+        try
+        {
+            if (sillyness) MinecraftForge.EVENT_BUS.register(this);
+            else MinecraftForge.EVENT_BUS.unregister(this);
+        }
+        catch (Exception e)
+        {
+            if (D3Core.debug()) e.printStackTrace();
+        }
+        try
+        {
+            if (sillyness) FMLCommonHandler.instance().bus().register(this);
+            else FMLCommonHandler.instance().bus().unregister(this);
         }
         catch (Exception e)
         {
