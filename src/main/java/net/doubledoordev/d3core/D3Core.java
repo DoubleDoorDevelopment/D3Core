@@ -46,6 +46,7 @@ import cpw.mods.fml.common.versioning.DefaultArtifactVersion;
 import net.doubledoordev.d3core.util.CoreHelper;
 import net.doubledoordev.d3core.util.DevPerks;
 import net.doubledoordev.d3core.util.ID3Mod;
+import net.doubledoordev.libs.org.mcstats.Metrics;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.common.config.Configuration;
@@ -82,6 +83,7 @@ public class D3Core implements ID3Mod
     private boolean sillyness = true;
     private boolean updateWarning = true;
 
+    private List<ModContainer> d3Mods = new ArrayList<>();
     private List<CoreHelper.ModUpdateDate> updateDateList = new ArrayList<>();
 
     @Mod.EventHandler
@@ -105,6 +107,7 @@ public class D3Core implements ID3Mod
                 if (modContainer instanceof FMLModContainer && modContainer.getMod() instanceof ID3Mod)
                 {
                     if (debug()) logger.info(String.format("[%s] Found a D3 Mod!", modContainer.getModId()));
+                    d3Mods.add(modContainer);
 
                     TreeSet<ArtifactVersion> availableVersions = new TreeSet<>();
 
@@ -141,6 +144,40 @@ public class D3Core implements ID3Mod
                 logger.info("D3 Mod " + modContainer.getModId() + " Version check FAILED. Please report this error!");
                 e.printStackTrace();
             }
+        }
+
+        try
+        {
+            Metrics metrics = new Metrics(MODID, metadata.version);
+
+            Metrics.Graph submods = metrics.createGraph("Submods");
+            for (ModContainer modContainer : d3Mods)
+            {
+                submods.addPlotter(new Metrics.Plotter(modContainer.getModId()) {
+                    @Override
+                    public int getValue()
+                    {
+                        return 1;
+                    }
+                });
+            }
+
+            for (ModContainer modContainer : d3Mods)
+            {
+                metrics.createGraph(modContainer.getModId()).addPlotter(new Metrics.Plotter(modContainer.getDisplayVersion()) {
+                    @Override
+                    public int getValue()
+                    {
+                        return 1;
+                    }
+                });
+            }
+
+            metrics.start();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
         }
     }
 
