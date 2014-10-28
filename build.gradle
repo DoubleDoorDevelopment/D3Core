@@ -37,7 +37,7 @@ archivesBaseName = 'D3Core'
 def githuborg = 'DoubleDoorDevelopment'
 def description = 'DoubleDoor Development Core'
 minecraft {
-    version = "1.7.10-10.13.0.1190"
+    version = "1.7.10-10.13.1.1226"
     runDir = "jars"
 }
 

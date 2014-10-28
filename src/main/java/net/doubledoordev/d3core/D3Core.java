@@ -38,24 +38,30 @@ import cpw.mods.fml.common.*;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.versioning.ArtifactVersion;
 import cpw.mods.fml.common.versioning.DefaultArtifactVersion;
+import net.doubledoordev.d3core.permissions.PermissionsDB;
+import net.doubledoordev.d3core.permissions.cmd.CommandGroup;
 import net.doubledoordev.d3core.util.CoreHelper;
 import net.doubledoordev.d3core.util.DevPerks;
 import net.doubledoordev.d3core.util.ID3Mod;
-import net.doubledoordev.libs.org.mcstats.Metrics;
+import net.doubledoordev.d3core.util.libs.org.mcstats.Metrics;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.common.config.Configuration;
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,19 +77,20 @@ public class D3Core implements ID3Mod
 {
     @Mod.Instance(MODID)
     public static D3Core instance;
+    private File folder;
 
     @Mod.Metadata
     private ModMetadata metadata;
 
-    private Logger logger;
-    private DevPerks devPerks;
+    private Logger        logger;
+    private DevPerks      devPerks;
     private Configuration configuration;
 
-    private boolean debug = false;
-    private boolean sillyness = true;
+    private boolean debug         = false;
+    private boolean sillyness     = true;
     private boolean updateWarning = true;
 
-    private List<ModContainer> d3Mods = new ArrayList<>();
+    private List<ModContainer>             d3Mods         = new ArrayList<>();
     private List<CoreHelper.ModUpdateDate> updateDateList = new ArrayList<>();
 
     @Mod.EventHandler
@@ -92,8 +99,27 @@ public class D3Core implements ID3Mod
         FMLCommonHandler.instance().bus().register(this);
 
         logger = event.getModLog();
-        configuration = new Configuration(event.getSuggestedConfigurationFile());
+
+        folder = new File(event.getModConfigurationDirectory(), MODID);
+        folder.mkdir();
+
+        File configFile = new File(folder, event.getSuggestedConfigurationFile().getName());
+        if (event.getSuggestedConfigurationFile().exists())
+        {
+            try
+            {
+                FileUtils.copyFile(event.getSuggestedConfigurationFile(), configFile);
+                event.getSuggestedConfigurationFile().delete();
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        configuration = new Configuration(configFile);
         syncConfig();
+
+        PermissionsDB.load();
     }
 
     @Mod.EventHandler
@@ -188,6 +214,14 @@ public class D3Core implements ID3Mod
         {
             logger.warn(String.format("Update available for %s (%s)! Current version: %s New version: %s. Please update ASAP!", updateDate.getName(), updateDate.getModId(), updateDate.getCurrentVersion(), updateDate.getLatestVersion()));
         }
+
+        PermissionsDB.save();
+    }
+
+    @Mod.EventHandler
+    public void serverStarting(FMLServerStartingEvent event)
+    {
+        event.registerServerCommand(new CommandGroup());
     }
 
     @SubscribeEvent
@@ -253,5 +287,10 @@ public class D3Core implements ID3Mod
     {
         if (instance.devPerks == null) instance.devPerks = new DevPerks();
         return instance.devPerks;
+    }
+
+    public static File getFolder()
+    {
+        return instance.folder;
     }
 }

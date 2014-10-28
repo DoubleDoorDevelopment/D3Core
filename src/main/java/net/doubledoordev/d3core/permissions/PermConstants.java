@@ -30,27 +30,13 @@
  *
  */
 
-package net.doubledoordev.d3core.util;
-
-import com.google.common.base.Joiner;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import net.doubledoordev.d3core.permissions.Node;
+package net.doubledoordev.d3core.permissions;
 
 /**
  * @author Dries007
  */
-public class CoreConstants
+public class PermConstants
 {
-    public static final String MODID            = "D3Core";
-    public static final String NAME             = "D³ Core";
-    public static final String BASEURL          = "http://doubledoordev.net/";
-    public static final String PERKSURL         = BASEURL + "perks.json";
-    public static final String MAVENURL         = BASEURL + "maven/";
-    /**
-     * @see net.doubledoordev.d3core.client.ModConfigGuiFactory
-     */
-    public static final String MOD_GUI_FACTORY = "net.doubledoordev.d3core.client.ModConfigGuiFactory";
-    public static final Gson   GSON = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(Node.class, new Node.JsonHelper()).create();
-    public static final Joiner JOINER_DOT = Joiner.on('.');
+    public static final String COMMAND_PREFIX = "cmd";
+    public static final String PERMISSIONS_PREFIX = "permissions";
 }

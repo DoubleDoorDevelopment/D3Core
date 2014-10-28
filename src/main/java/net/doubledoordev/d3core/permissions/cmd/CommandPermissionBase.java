@@ -30,27 +30,34 @@
  *
  */
 
-package net.doubledoordev.d3core.util;
+package net.doubledoordev.d3core.permissions.cmd;
 
-import com.google.common.base.Joiner;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import net.doubledoordev.d3core.permissions.Node;
+import net.doubledoordev.d3core.permissions.PermConstants;
+import net.doubledoordev.d3core.permissions.PermissionsDB;
+import net.minecraft.command.CommandBase;
+import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayer;
 
 /**
  * @author Dries007
  */
-public class CoreConstants
+public abstract class CommandPermissionBase extends CommandBase
 {
-    public static final String MODID            = "D3Core";
-    public static final String NAME             = "D³ Core";
-    public static final String BASEURL          = "http://doubledoordev.net/";
-    public static final String PERKSURL         = BASEURL + "perks.json";
-    public static final String MAVENURL         = BASEURL + "maven/";
-    /**
-     * @see net.doubledoordev.d3core.client.ModConfigGuiFactory
-     */
-    public static final String MOD_GUI_FACTORY = "net.doubledoordev.d3core.client.ModConfigGuiFactory";
-    public static final Gson   GSON = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(Node.class, new Node.JsonHelper()).create();
-    public static final Joiner JOINER_DOT = Joiner.on('.');
+    @Override
+    public boolean canCommandSenderUseCommand(ICommandSender sender)
+    {
+        if (sender instanceof EntityPlayer) return PermissionsDB.INSTANCE.checkPermissions(sender, getBasePermission());
+        else return super.canCommandSenderUseCommand(sender);
+    }
+
+    public Node getBasePermission()
+    {
+        return new Node(PermConstants.COMMAND_PREFIX + "." + getCommandName());
+    }
+
+    public boolean checkExtraPermission(ICommandSender sender, String... extras)
+    {
+        return PermissionsDB.INSTANCE.checkPermissions(sender, getBasePermission().append(extras));
+    }
 }

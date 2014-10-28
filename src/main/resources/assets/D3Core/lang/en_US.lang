@@ -11,3 +11,11 @@ d3.core.config.sillyness.tooltip=Please don't disable, unless you want to piss o
 
 d3.core.config.updateWarning=Update warnings
 d3.core.config.updateWarning.tooltip=Please don't disable, unless you are on a modpack.
+
+commands.d3group.usage='/d3group help' for help
+commands.d3group.help.new=/d3group new <group> [parent group]
+commands.d3group.help.remove=/d3group remove <group>
+commands.d3group.help.node.add=/d3group node <group> add <permission node>
+commands.d3group.help.node.remove=/d3group node <group> remove <permission node>
+commands.d3group.help.parent.set=/d3group parent <group> set <parent group>
+commands.d3group.help.parent.clear=/d3group parent <group> clear

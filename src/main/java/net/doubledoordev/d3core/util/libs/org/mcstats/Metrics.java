@@ -1,4 +1,4 @@
-package net.doubledoordev.libs.org.mcstats;
+package net.doubledoordev.d3core.util.libs.org.mcstats;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.FMLLog;
