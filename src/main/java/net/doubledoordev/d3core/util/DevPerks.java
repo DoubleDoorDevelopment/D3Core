@@ -30,6 +30,7 @@
 
 package net.doubledoordev.d3core.util;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -39,6 +40,9 @@ import cpw.mods.fml.common.registry.GameData;
 import net.doubledoordev.d3core.D3Core;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -68,6 +72,35 @@ public class DevPerks
         }
     }
 
+    public static ItemStack getItemStackFromJson(JsonObject data, int defaultMeta, int defaultStacksize)
+    {
+        int meta = data.has("meta") ? data.get("meta").getAsInt() : defaultMeta;
+        int size = data.has("size") ? data.get("size").getAsInt() : defaultStacksize;
+        ItemStack stack = new ItemStack(GameData.getItemRegistry().getObject(data.get("name").getAsString()), size, meta);
+        if (data.has("display")) stack.setStackDisplayName(data.get("display").getAsString());
+        if (data.has("color"))
+        {
+            NBTTagCompound root = stack.getTagCompound();
+            if (root == null) root = new NBTTagCompound();
+            NBTTagCompound display = root.getCompoundTag("display");
+            display.setInteger("color", data.get("color").getAsInt());
+            root.setTag("display", display);
+            stack.setTagCompound(root);
+        }
+        if (data.has("lore"))
+        {
+            NBTTagCompound root = stack.getTagCompound();
+            if (root == null) root = new NBTTagCompound();
+            NBTTagCompound display = root.getCompoundTag("display");
+            NBTTagList lore = new NBTTagList();
+            for (JsonElement element : data.getAsJsonArray("lore")) lore.appendTag(new NBTTagString(element.getAsString()));
+            display.setTag("Lore", lore);
+            root.setTag("display", display);
+            stack.setTagCompound(root);
+        }
+        return stack;
+    }
+
     /**
      * Something other than capes for once
      */
@@ -83,10 +116,9 @@ public class DevPerks
                 if (perk.has("displayname")) event.displayname = perk.get("displayname").getAsString();
                 if (perk.has("hat") && (event.entityPlayer.inventory.armorInventory[3] == null || event.entityPlayer.inventory.armorInventory[3].stackSize == 0))
                 {
-                    JsonObject hat = perk.getAsJsonObject("hat");
-                    String name = hat.get("name").getAsString();
-                    int meta = hat.has("meta") ? hat.get("meta").getAsInt() : 0;
-                    event.entityPlayer.inventory.armorInventory[3] = new ItemStack(GameData.getItemRegistry().getObject(name), 0, meta);
+                    ItemStack hat = getItemStackFromJson(perk.getAsJsonObject("hat"), 0, 0);
+                    hat.stackSize = 0;
+                    event.entityPlayer.inventory.armorInventory[3] = hat;
                 }
             }
         }
@@ -107,10 +139,9 @@ public class DevPerks
                 JsonObject perk = perks.getAsJsonObject(event.original.getCommandSenderName());
                 if (perk.has("hat") && (event.entityPlayer.inventory.armorInventory[3] == null || event.entityPlayer.inventory.armorInventory[3].stackSize == 0))
                 {
-                    JsonObject hat = perk.getAsJsonObject("hat");
-                    String name = hat.get("name").getAsString();
-                    int meta = hat.has("meta") ? hat.get("meta").getAsInt() : 0;
-                    event.entityPlayer.inventory.armorInventory[3] = new ItemStack(GameData.getItemRegistry().getObject(name), 0, meta);
+                    ItemStack hat = getItemStackFromJson(perk.getAsJsonObject("hat"), 0, 0);
+                    hat.stackSize = 0;
+                    event.entityPlayer.inventory.armorInventory[3] = hat;
                 }
             }
         }
@@ -131,11 +162,7 @@ public class DevPerks
                 JsonObject perk = perks.getAsJsonObject(event.entityPlayer.getCommandSenderName());
                 if (perk.has("drop"))
                 {
-                    JsonObject drop = perk.getAsJsonObject("drop");
-                    String name = drop.get("name").getAsString();
-                    int meta = drop.has("meta") ? drop.get("meta").getAsInt() : 0;
-                    int size = drop.has("size") ? drop.get("size").getAsInt() : 1;
-                    event.drops.add(new EntityItem(event.entityPlayer.getEntityWorld(), event.entityPlayer.posX, event.entityPlayer.posY, event.entityPlayer.posZ, new ItemStack(GameData.getItemRegistry().getObject(name), size, meta)));
+                    event.drops.add(new EntityItem(event.entityPlayer.getEntityWorld(), event.entityPlayer.posX, event.entityPlayer.posY, event.entityPlayer.posZ, getItemStackFromJson(perk.getAsJsonObject("drop"), 0, 1)));
                 }
             }
         }
