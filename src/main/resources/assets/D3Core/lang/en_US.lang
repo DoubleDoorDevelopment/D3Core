@@ -12,6 +12,18 @@ d3.core.config.sillyness.tooltip=Please don't disable, unless you want to piss o
 d3.core.config.updateWarning=Update warnings
 d3.core.config.updateWarning.tooltip=Please don't disable, unless you are on a modpack.
 
+d3.core.config.EndermanGriefing=Enderman Griefing
+d3.core.config.EndermanGriefing.tooltip=Modify Enderman griefing
+
+d3.core.config.EndermanGriefing.disable=Disable
+d3.core.config.EndermanGriefing.disable.tooltip=Disable Enderman griefing completely.
+
+d3.core.config.EndermanGriefing.blacklist=Blacklist
+d3.core.config.EndermanGriefing.blacklist.tooltip=List of blocks (minecraft:stone) that will never be allowed to be picked up.
+
+d3.core.config.EndermanGriefing.addlist=Addlist
+d3.core.config.EndermanGriefing.addlist.tooltip=List of blocks (minecraft:stone) that will be added to the list of blocks Enderman pick up.
+
 commands.d3group.usage='/d3group help' for help
 commands.d3group.help.new=/d3group new <group> [parent group]
 commands.d3group.help.remove=/d3group remove <group>

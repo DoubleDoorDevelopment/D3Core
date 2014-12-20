@@ -48,11 +48,13 @@ import net.doubledoordev.d3core.permissions.PermissionsDB;
 import net.doubledoordev.d3core.permissions.cmd.CommandGroup;
 import net.doubledoordev.d3core.util.CoreHelper;
 import net.doubledoordev.d3core.util.DevPerks;
+import net.doubledoordev.d3core.util.EndermanGriefing;
 import net.doubledoordev.d3core.util.ID3Mod;
 import net.doubledoordev.d3core.util.libs.org.mcstats.Metrics;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Property;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
@@ -92,6 +94,7 @@ public class D3Core implements ID3Mod
 
     private List<ModContainer>             d3Mods         = new ArrayList<>();
     private List<CoreHelper.ModUpdateDate> updateDateList = new ArrayList<>();
+    private boolean pastPost;
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
@@ -222,6 +225,9 @@ public class D3Core implements ID3Mod
             logger.warn(String.format("Update available for %s (%s)! Current version: %s New version: %s. Please update ASAP!", updateDate.getName(), updateDate.getModId(), updateDate.getCurrentVersion(), updateDate.getLatestVersion()));
         }
 
+        EndermanGriefing.init();
+        pastPost = true;
+
         PermissionsDB.save();
     }
 
@@ -265,6 +271,23 @@ public class D3Core implements ID3Mod
         sillyness = configuration.getBoolean("sillyness", MODID, sillyness, "Enable sillyness\nBut seriously, you can disable name changes, drops and block helmets with this setting.", "d3.core.config.sillyness");
         updateWarning = configuration.getBoolean("updateWarning", MODID, updateWarning, "Allow update warnings on login", "d3.core.config.updateWarning");
         getDevPerks().update(sillyness);
+
+        final String catEnderGriefing = MODID + ".EndermanGriefing";
+        configuration.setCategoryLanguageKey(catEnderGriefing, "d3.core.config.EndermanGriefing");
+
+        EndermanGriefing.undo();
+
+        EndermanGriefing.disable = configuration.getBoolean("disable", catEnderGriefing, false, "Disable Enderman griefing completely.", "d3.core.config.EndermanGriefing.disable");
+
+        Property property = configuration.get(catEnderGriefing, "blacklist", new String[0], "List of blocks (minecraft:stone) that will never be allowed to be picked up.");
+        property.setLanguageKey("d3.core.config.EndermanGriefing.blacklist");
+        EndermanGriefing.blacklist = property.getStringList();
+
+        property = configuration.get(catEnderGriefing, "addlist", new String[0], "List of blocks (minecraft:stone) that will be added to the list of blocks Enderman pick up.");
+        property.setLanguageKey("d3.core.config.EndermanGriefing.addlist");
+        EndermanGriefing.addList = property.getStringList();
+
+        if (pastPost) EndermanGriefing.init();
 
         if (configuration.hasChanged()) configuration.save();
     }
