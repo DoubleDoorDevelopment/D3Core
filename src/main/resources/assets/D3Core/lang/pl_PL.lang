@@ -1,0 +1,21 @@
+d3.core.config.title=Ekran konfiguracji D³
+
+d3.core.config.core=Konfiguracja rdzenia
+d3.core.config.core.tooltip=Działa na wszystkie mody D³
+
+d3.core.config.debug=Tryb debugowania
+d3.core.config.debug.tooltip=Proszę włączyć przed reportowaniem bugów.
+
+d3.core.config.sillyness=Włącz głupoty
+d3.core.config.sillyness.tooltip=Proszę nie wyłączać, chyba, że chcesz wkurzyć ekipę D³ :p Ale poważnie, możesz wyłączyć zmiany nazw, wypadające przedmioty i blokować hełmy tym ustawieniem.
+
+d3.core.config.updateWarning=Ostrzeżenia o uaktualnieniach
+d3.core.config.updateWarning.tooltip=Proszę nie wyłączać, chyba, że używasz paczki modów.
+
+commands.d3group.usage='/d3group help' dla pomocy
+commands.d3group.help.new=/d3group new <grupa> [grupa nadrzędna]
+commands.d3group.help.remove=/d3group remove <grupa>
+commands.d3group.help.node.add=/d3group node <grupa> add <węzeł uprawnień>
+commands.d3group.help.node.remove=/d3group node <grupa> remove <węzeł uprawnień>
+commands.d3group.help.parent.set=/d3group parent <grupa> set <grupa nadrzędna>
+commands.d3group.help.parent.clear=/d3group parent <grupa> clear
