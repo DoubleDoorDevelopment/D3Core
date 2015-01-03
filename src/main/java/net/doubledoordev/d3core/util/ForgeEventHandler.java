@@ -32,50 +32,33 @@
 
 package net.doubledoordev.d3core.util;
 
+import cpw.mods.fml.common.eventhandler.EventPriority;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.registry.GameData;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.oredict.OreDictionary;
+
 /**
  * @author Dries007
  */
-public class CoreHelper
+public class ForgeEventHandler
 {
-    private CoreHelper()
+    public static final ForgeEventHandler FORGE_EVENT_HANDLER = new ForgeEventHandler();
+    public boolean enableStringID;
+    public boolean enableUnlocalizedName;
+    public boolean enableOreDictionary;
+
+    private ForgeEventHandler() {}
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void itemTooltipEventHandler(ItemTooltipEvent event)
     {
-    }
-
-    public static class ModUpdateDate
-    {
-        private final String name;
-        private final String modId;
-        private final String currentVersion;
-        private final String latestVersion;
-
-        public ModUpdateDate(String name, String modId, String currentVersion, String latestVersion)
+        if (event.showAdvancedItemTooltips)
         {
-            this.name = name;
-            this.modId = modId;
-            this.currentVersion = currentVersion;
-            this.latestVersion = latestVersion;
-        }
-
-        public String getName()
-        {
-            return name;
-        }
-
-        public String getModId()
-        {
-            return modId;
-        }
-
-        public String getCurrentVersion()
-        {
-            return currentVersion;
-        }
-
-        public String getLatestVersion()
-        {
-            return latestVersion;
+            if (enableStringID) event.toolTip.add(EnumChatFormatting.DARK_AQUA + GameData.getItemRegistry().getNameForObject(event.itemStack.getItem()));
+            if (enableUnlocalizedName) event.toolTip.add(EnumChatFormatting.DARK_GREEN + event.itemStack.getUnlocalizedName());
+            if (enableOreDictionary) for (int id : OreDictionary.getOreIDs(event.itemStack)) event.toolTip.add(EnumChatFormatting.DARK_PURPLE + OreDictionary.getOreName(id));
         }
     }
-
-
 }

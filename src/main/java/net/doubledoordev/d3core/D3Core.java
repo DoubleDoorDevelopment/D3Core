@@ -46,12 +46,10 @@ import cpw.mods.fml.common.versioning.ArtifactVersion;
 import cpw.mods.fml.common.versioning.DefaultArtifactVersion;
 import net.doubledoordev.d3core.permissions.PermissionsDB;
 import net.doubledoordev.d3core.permissions.cmd.CommandGroup;
-import net.doubledoordev.d3core.util.CoreHelper;
-import net.doubledoordev.d3core.util.DevPerks;
-import net.doubledoordev.d3core.util.EndermanGriefing;
-import net.doubledoordev.d3core.util.ID3Mod;
+import net.doubledoordev.d3core.util.*;
 import net.doubledoordev.d3core.util.libs.org.mcstats.Metrics;
 import net.minecraft.util.IChatComponent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
@@ -70,6 +68,7 @@ import java.util.List;
 import java.util.TreeSet;
 
 import static net.doubledoordev.d3core.util.CoreConstants.*;
+import static net.doubledoordev.d3core.util.ForgeEventHandler.FORGE_EVENT_HANDLER;
 
 /**
  * @author Dries007
@@ -100,6 +99,7 @@ public class D3Core implements ID3Mod
     public void preInit(FMLPreInitializationEvent event)
     {
         FMLCommonHandler.instance().bus().register(this);
+        MinecraftForge.EVENT_BUS.register(FORGE_EVENT_HANDLER);
 
         logger = event.getModLog();
 
@@ -271,6 +271,13 @@ public class D3Core implements ID3Mod
         sillyness = configuration.getBoolean("sillyness", MODID, sillyness, "Enable sillyness\nBut seriously, you can disable name changes, drops and block helmets with this setting.", "d3.core.config.sillyness");
         updateWarning = configuration.getBoolean("updateWarning", MODID, updateWarning, "Allow update warnings on login", "d3.core.config.updateWarning");
         getDevPerks().update(sillyness);
+
+        final String catTooltips = MODID + ".tooltips";
+        configuration.setCategoryLanguageKey(catTooltips, "d3.core.config.tooltips").addCustomCategoryComment(catTooltips, LanguageRegistry.instance().getStringLocalization("d3.core.config.tooltips"));
+        // public boolean getBoolean(String name, String category, boolean defaultValue, String comment, String langKey)
+        FORGE_EVENT_HANDLER.enableStringID = configuration.getBoolean("enableStringID", catTooltips, true, "Example: minecraft:gold_ore", "d3.core.config.tooltips.enableStringID");
+        FORGE_EVENT_HANDLER.enableUnlocalizedName = configuration.getBoolean("enableUnlocalizedName", catTooltips, true, "Example: tile.oreGold", "d3.core.config.tooltips.enableUnlocalizedName");
+        FORGE_EVENT_HANDLER.enableOreDictionary = configuration.getBoolean("enableOreDictionary", catTooltips, true, "Example: oreGold", "d3.core.config.tooltips.enableOreDictionary");
 
         final String catEnderGriefing = MODID + ".EndermanGriefing";
         configuration.setCategoryLanguageKey(catEnderGriefing, "d3.core.config.EndermanGriefing");

@@ -12,6 +12,18 @@ d3.core.config.sillyness.tooltip=Please don't disable, unless you want to piss o
 d3.core.config.updateWarning=Update warnings
 d3.core.config.updateWarning.tooltip=Please don't disable, unless you are on a modpack.
 
+d3.core.config.tooltips=Tooltips
+d3.core.config.tooltips.tooltip=Item hover options, toggle with F3 + H
+
+d3.core.config.tooltips.enableStringID=Enable StringID
+d3.core.config.tooltips.enableStringID.tooltip=Example: minecraft:gold_ore
+
+d3.core.config.tooltips.enableUnlocalizedName=Enable Unlocalized Name
+d3.core.config.tooltips.enableUnlocalizedName.tooltip=Example: tile.oreGold
+
+d3.core.config.tooltips.enableOreDictionary=Enable OreDictionary
+d3.core.config.tooltips.enableOreDictionary.tooltip=Example: oreGold
+
 d3.core.config.EndermanGriefing=Enderman Griefing
 d3.core.config.EndermanGriefing.tooltip=Modify Enderman griefing
 
