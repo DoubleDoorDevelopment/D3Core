@@ -35,7 +35,15 @@ package net.doubledoordev.d3core.util;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.GameData;
+import net.minecraft.block.material.Material;
+import net.minecraft.entity.item.EntityEnderEye;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.monster.EntityEnderman;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -59,6 +67,20 @@ public class ForgeEventHandler
             if (enableStringID) event.toolTip.add(EnumChatFormatting.DARK_AQUA + GameData.getItemRegistry().getNameForObject(event.itemStack.getItem()));
             if (enableUnlocalizedName) event.toolTip.add(EnumChatFormatting.DARK_GREEN + event.itemStack.getUnlocalizedName());
             if (enableOreDictionary) for (int id : OreDictionary.getOreIDs(event.itemStack)) event.toolTip.add(EnumChatFormatting.DARK_PURPLE + OreDictionary.getOreName(id));
+        }
+    }
+
+    @SubscribeEvent()
+    public void entityDeathEvent(LivingDropsEvent event)
+    {
+        if (event.entityLiving instanceof EntityEnderman && EndermanGriefing.dropCarrying)
+        {
+            EntityEnderman entityEnderman = ((EntityEnderman) event.entityLiving);
+            if (entityEnderman.func_146080_bZ() != Blocks.air)
+            {
+                ItemStack stack = new ItemStack(entityEnderman.func_146080_bZ(), 1, entityEnderman.getCarryingData());
+                event.drops.add(new EntityItem(entityEnderman.worldObj, entityEnderman.posX, entityEnderman.posY, entityEnderman.posZ, stack));
+            }
         }
     }
 }

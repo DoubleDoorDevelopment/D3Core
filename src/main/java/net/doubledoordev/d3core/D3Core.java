@@ -288,6 +288,7 @@ public class D3Core implements ID3Mod
         EndermanGriefing.undo();
 
         EndermanGriefing.disable = configuration.getBoolean("disable", catEnderGriefing, false, "Disable Enderman griefing completely.", "d3.core.config.EndermanGriefing.disable");
+        EndermanGriefing.dropCarrying = configuration.getBoolean("dropCarrying", catEnderGriefing, false, "Made Enderman drop there carrying block on death.", "d3.core.config.EndermanGriefing.dropCarrying");
 
         Property property = configuration.get(catEnderGriefing, "blacklist", new String[0], "List of blocks (minecraft:stone) that will never be allowed to be picked up.");
         property.setLanguageKey("d3.core.config.EndermanGriefing.blacklist");

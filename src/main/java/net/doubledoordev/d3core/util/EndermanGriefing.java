@@ -1,12 +1,14 @@
 package net.doubledoordev.d3core.util;
 
+import cpw.mods.fml.common.registry.FMLControlledNamespacedRegistry;
 import cpw.mods.fml.common.registry.GameData;
 import net.doubledoordev.d3core.D3Core;
 import net.minecraft.block.Block;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.init.Blocks;
 
-import java.util.HashMap;
+import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * @author Dries007
@@ -14,6 +16,7 @@ import java.util.HashMap;
 public class EndermanGriefing
 {
     public static boolean disable;
+    public static boolean dropCarrying;
     public static String[] blacklist;
     public static String[] addList;
 
@@ -23,36 +26,63 @@ public class EndermanGriefing
     {
         if (disable)
         {
-            for (Object key : GameData.getBlockRegistry().getKeys())
+            FMLControlledNamespacedRegistry<Block> blockData = GameData.getBlockRegistry();
+            for (Object key : blockData.getKeys())
             {
-                Block block = (Block) GameData.getBlockRegistry().getObject(key);
-                reverseMap.put(GameData.getBlockRegistry().getNameForObject(block), EntityEnderman.getCarriable(block));
+                Block block = (Block) blockData.getObject(key);
+                reverseMap.put(blockData.getNameForObject(block), EntityEnderman.getCarriable(block));
                 EntityEnderman.setCarriable(block, false);
             }
         }
         else
         {
+            int added = 0, removed = 0;
             for (String item : addList)
             {
-                if (!GameData.getBlockRegistry().containsKey(item))
+                List<Block> blocks = matchBlock(item);
+                if (blocks.isEmpty())  D3Core.getLogger().warn("[EndermanGriefing]  '{}' does not match any block...", item);
+                else
                 {
-                    D3Core.getLogger().warn("Block %s does not exist...", item);
-                    continue;
+                    for (Block block : blocks)
+                    {
+                        reverseMap.put(item, EntityEnderman.getCarriable(block));
+                        EntityEnderman.setCarriable(block, true);
+                        added ++;
+                    }
                 }
-                reverseMap.put(item, EntityEnderman.getCarriable(GameData.getBlockRegistry().getObject(item)));
-                EntityEnderman.setCarriable(GameData.getBlockRegistry().getObject(item), true);
             }
             for (String item : blacklist)
             {
-                if (!GameData.getBlockRegistry().containsKey(item))
+                List<Block> blocks = matchBlock(item);
+                if (blocks.isEmpty()) D3Core.getLogger().warn("[EndermanGriefing] '{}' does not match any block...", item);
+                else
                 {
-                    D3Core.getLogger().warn("Block %s does not exist...", item);
-                    continue;
+                    for (Block block : blocks)
+                    {
+                        reverseMap.put(item, EntityEnderman.getCarriable(block));
+                        EntityEnderman.setCarriable(block, false);
+                        removed ++;
+                    }
                 }
-                reverseMap.put(item, EntityEnderman.getCarriable(GameData.getBlockRegistry().getObject(item)));
-                EntityEnderman.setCarriable(GameData.getBlockRegistry().getObject(item), false);
+            }
+            D3Core.getLogger().info("[EndermanGriefing] Added {} and removed {} blocks to the Ederman grab list...", added, removed);
+        }
+    }
+
+    private static List<Block> matchBlock(String item)
+    {
+        ArrayList<Block> blocks = new ArrayList<>();
+        Pattern pattern = Pattern.compile(item.replace("*", ".*?"));
+        FMLControlledNamespacedRegistry<Block> blockData = GameData.getBlockRegistry();
+        for (Block block : blockData.typeSafeIterable())
+        {
+            if (pattern.matcher(blockData.getNameForObject(block)).matches())
+            {
+                if (blockData.getId(block) > 255) D3Core.getLogger().warn("[EndermanGriefing] Blocks with ID > 255 won't work! Not accepting {}", blockData.getNameForObject(block));
+                else blocks.add(block);
             }
         }
+        return blocks;
     }
 
     public static void undo()

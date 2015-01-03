@@ -30,6 +30,9 @@ d3.core.config.EndermanGriefing.tooltip=Modify Enderman griefing
 d3.core.config.EndermanGriefing.disable=Disable
 d3.core.config.EndermanGriefing.disable.tooltip=Disable Enderman griefing completely.
 
+d3.core.config.EndermanGriefing.dropCarrying=Drop Carrying
+d3.core.config.EndermanGriefing.dropCarrying.tooltip=Made Enderman drop there carrying block on death.
+
 d3.core.config.EndermanGriefing.blacklist=Blacklist
 d3.core.config.EndermanGriefing.blacklist.tooltip=List of blocks (minecraft:stone) that will never be allowed to be picked up.
 
