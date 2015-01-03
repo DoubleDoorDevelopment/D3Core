@@ -68,6 +68,7 @@ import java.util.List;
 import java.util.TreeSet;
 
 import static net.doubledoordev.d3core.util.CoreConstants.*;
+import static net.doubledoordev.d3core.util.FMLEventHandler.FML_EVENT_HANDLER;
 import static net.doubledoordev.d3core.util.ForgeEventHandler.FORGE_EVENT_HANDLER;
 
 /**
@@ -99,6 +100,7 @@ public class D3Core implements ID3Mod
     public void preInit(FMLPreInitializationEvent event)
     {
         FMLCommonHandler.instance().bus().register(this);
+        FMLCommonHandler.instance().bus().register(FML_EVENT_HANDLER);
         MinecraftForge.EVENT_BUS.register(FORGE_EVENT_HANDLER);
 
         logger = event.getModLog();
@@ -270,11 +272,12 @@ public class D3Core implements ID3Mod
         debug = configuration.getBoolean("debug", MODID, debug, "Enable debug mode", "d3.core.config.debug");
         sillyness = configuration.getBoolean("sillyness", MODID, sillyness, "Enable sillyness\nBut seriously, you can disable name changes, drops and block helmets with this setting.", "d3.core.config.sillyness");
         updateWarning = configuration.getBoolean("updateWarning", MODID, updateWarning, "Allow update warnings on login", "d3.core.config.updateWarning");
+        FML_EVENT_HANDLER.norain = configuration.getBoolean("norain", MODID, FML_EVENT_HANDLER.norain, "No more rain if set to true.", "d3.core.config.norain");
         getDevPerks().update(sillyness);
 
         final String catTooltips = MODID + ".tooltips";
         configuration.setCategoryLanguageKey(catTooltips, "d3.core.config.tooltips").addCustomCategoryComment(catTooltips, LanguageRegistry.instance().getStringLocalization("d3.core.config.tooltips"));
-        // public boolean getBoolean(String name, String category, boolean defaultValue, String comment, String langKey)
+
         FORGE_EVENT_HANDLER.enableStringID = configuration.getBoolean("enableStringID", catTooltips, true, "Example: minecraft:gold_ore", "d3.core.config.tooltips.enableStringID");
         FORGE_EVENT_HANDLER.enableUnlocalizedName = configuration.getBoolean("enableUnlocalizedName", catTooltips, true, "Example: tile.oreGold", "d3.core.config.tooltips.enableUnlocalizedName");
         FORGE_EVENT_HANDLER.enableOreDictionary = configuration.getBoolean("enableOreDictionary", catTooltips, true, "Example: oreGold", "d3.core.config.tooltips.enableOreDictionary");
