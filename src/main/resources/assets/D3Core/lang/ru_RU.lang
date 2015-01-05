@@ -1,0 +1,48 @@
+d3.core.config.title=Конфигурация D³
+
+d3.core.config.core=Главная конфигурация
+d3.core.config.core.tooltip=Применяется для всех модов D³
+
+d3.core.config.debug=Режим отладки
+d3.core.config.debug.tooltip=Пожалуйста, включите, прежде чем отправить отчёт об ошибке.
+
+d3.core.config.sillyness=Включение примочек
+d3.core.config.sillyness.tooltip=Пожалуйста не отключайте, если Вы не хотите позлить команду D³ :p А если серьезно, Вы можете отключить изменения имени, выпадение предметов и шлемы-блоки этой настройкой.
+
+d3.core.config.updateWarning=Предупреждения об обновлениях
+d3.core.config.updateWarning.tooltip=Пожалуйста, не отключайте, если только Вы не используете пакет модов.
+
+d3.core.config.tooltips=Подсказки
+d3.core.config.tooltips.tooltip=Подсказки к предметам, переключаются с помощью F3 + H
+
+d3.core.config.tooltips.enableStringID=Включение StringID
+d3.core.config.tooltips.enableStringID.tooltip=Пример: minecraft:gold_ore
+
+d3.core.config.tooltips.enableUnlocalizedName=Включение Unlocalized Name
+d3.core.config.tooltips.enableUnlocalizedName.tooltip=Пример: tile.oreGold
+
+d3.core.config.tooltips.enableOreDictionary=Включение словаря руд
+d3.core.config.tooltips.enableOreDictionary.tooltip=Пример: oreGold
+
+d3.core.config.EndermanGriefing=Взаимодействие странника Края с миром
+d3.core.config.EndermanGriefing.tooltip=Изменение взаимодействия странника Края с миром
+
+d3.core.config.EndermanGriefing.disable=Отключить
+d3.core.config.EndermanGriefing.disable.tooltip=Полностью отключает взаимодействие странника Края с миром.
+
+d3.core.config.EndermanGriefing.dropCarrying=Бросать блок в руке
+d3.core.config.EndermanGriefing.dropCarrying.tooltip=Заставляет странника Края бросить переносимый блок при смерти.
+
+d3.core.config.EndermanGriefing.blacklist=Чёрный список
+d3.core.config.EndermanGriefing.blacklist.tooltip=Список блоков (minecraft:stone), которые странник Края не может подбирать.
+
+d3.core.config.EndermanGriefing.addlist=Белый список
+d3.core.config.EndermanGriefing.addlist.tooltip=Список блоков (minecraft:stone), которые странник Края сможет подбирать.
+
+commands.d3group.usage='/d3group help' для помощи
+commands.d3group.help.new=/d3group new <группа> [исходная группа]
+commands.d3group.help.remove=/d3group remove <группа>
+commands.d3group.help.node.add=/d3group node <группа> add <узел разрешений>
+commands.d3group.help.node.remove=/d3group node <группа> remove <узел разрешений>
+commands.d3group.help.parent.set=/d3group parent <группа> set <исходная группа>
+commands.d3group.help.parent.clear=/d3group parent <группа> clear
