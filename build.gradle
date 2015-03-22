@@ -99,10 +99,10 @@ idea {
 }
 
 uploadArchives {
-    if (project.hasProperty("dddUser") && project.hasProperty("dddPass")) {
+    if (project.hasProperty("dddUser") && project.hasProperty("dddUrl") && project.hasProperty("dddPass")) {
         repositories {
             mavenDeployer {
-                repository(url: "http://doubledoordev.net:8081/artifactory/mods") {
+                repository(url: dddUrl) {
                     authentication(userName: dddUser, password: dddPass)
                 }
                 pom {
