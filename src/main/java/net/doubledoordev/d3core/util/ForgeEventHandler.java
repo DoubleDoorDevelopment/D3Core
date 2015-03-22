@@ -39,12 +39,14 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.item.EntityEnderEye;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityEnderman;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.oredict.OreDictionary;
 
 /**
@@ -56,6 +58,7 @@ public class ForgeEventHandler
     public boolean enableStringID;
     public boolean enableUnlocalizedName;
     public boolean enableOreDictionary;
+    public boolean nosleep;
 
     private ForgeEventHandler() {}
 
@@ -81,6 +84,15 @@ public class ForgeEventHandler
                 ItemStack stack = new ItemStack(entityEnderman.func_146080_bZ(), 1, entityEnderman.getCarryingData());
                 event.drops.add(new EntityItem(entityEnderman.worldObj, entityEnderman.posX, entityEnderman.posY, entityEnderman.posZ, stack));
             }
+        }
+    }
+
+    @SubscribeEvent()
+    public void sleepEvent(PlayerSleepInBedEvent event)
+    {
+        if (nosleep)
+        {
+            event.result = EntityPlayer.EnumStatus.OTHER_PROBLEM;
         }
     }
 }

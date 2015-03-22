@@ -273,6 +273,8 @@ public class D3Core implements ID3Mod
         sillyness = configuration.getBoolean("sillyness", MODID, sillyness, "Enable sillyness\nBut seriously, you can disable name changes, drops and block helmets with this setting.", "d3.core.config.sillyness");
         updateWarning = configuration.getBoolean("updateWarning", MODID, updateWarning, "Allow update warnings on login", "d3.core.config.updateWarning");
         FML_EVENT_HANDLER.norain = configuration.getBoolean("norain", MODID, FML_EVENT_HANDLER.norain, "No more rain if set to true.", "d3.core.config.norain");
+        FML_EVENT_HANDLER.insomnia = configuration.getBoolean("insomnia", MODID, FML_EVENT_HANDLER.insomnia, "No more daytime when players sleep if set to true.", "d3.core.config.insomnia");
+        FORGE_EVENT_HANDLER.nosleep = configuration.getBoolean("nosleep", MODID, FORGE_EVENT_HANDLER.nosleep, "No sleep at all", "d3.core.config.nosleep");
         getDevPerks().update(sillyness);
 
         final String catTooltips = MODID + ".tooltips";

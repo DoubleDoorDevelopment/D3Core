@@ -48,9 +48,10 @@ public class FMLEventHandler
     }
 
     public boolean norain;
+    public boolean insomnia;
 
     @SubscribeEvent
-    public void WorldTickHandler(TickEvent.WorldTickEvent event)
+    public void worldTickHandler(TickEvent.WorldTickEvent event)
     {
         if (event.side != Side.SERVER || event.phase != TickEvent.Phase.START) return;
 
@@ -61,6 +62,20 @@ public class FMLEventHandler
             worldInfo.setRaining(false);
             worldInfo.setRainTime(Integer.MAX_VALUE);
             worldInfo.setThunderTime(Integer.MAX_VALUE);
+        }
+    }
+
+    @SubscribeEvent
+    public void playerTickHandler(TickEvent.PlayerTickEvent event)
+    {
+        if (event.side != Side.SERVER || event.phase != TickEvent.Phase.START) return;
+
+        if (insomnia)
+        {
+            if (event.player.sleepTimer > 90)
+            {
+                event.player.sleepTimer = 90;
+            }
         }
     }
 }

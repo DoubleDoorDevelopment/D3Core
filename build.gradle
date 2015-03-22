@@ -57,6 +57,9 @@ task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
     classifier = 'src'
     appendix = project.minecraft.version
+    manifest {
+        attributes 'FMLAT': 'D3Core_at.cfg'
+    }
 }
 
 task deobfJar(type: Jar) {
@@ -67,11 +70,17 @@ task deobfJar(type: Jar) {
     }
 	classifier = 'dev'
     appendix = project.minecraft.version
+    manifest {
+        attributes 'FMLAT': 'D3Core_at.cfg'
+    }
 }
 
 jar {
     from "LICENSE.txt"
     appendix = project.minecraft.version
+    manifest {
+        attributes 'FMLAT': 'D3Core_at.cfg'
+    }
 }
 
 artifacts {
