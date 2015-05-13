@@ -130,6 +130,8 @@ public class D3Core implements ID3Mod
     @Mod.EventHandler
     public void init(FMLInitializationEvent event)
     {
+        Materials.load();
+
         final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         for (final ModContainer modContainer : Loader.instance().getActiveModList())
         {
@@ -284,23 +286,25 @@ public class D3Core implements ID3Mod
         FORGE_EVENT_HANDLER.enableUnlocalizedName = configuration.getBoolean("enableUnlocalizedName", catTooltips, true, "Example: tile.oreGold", "d3.core.config.tooltips.enableUnlocalizedName");
         FORGE_EVENT_HANDLER.enableOreDictionary = configuration.getBoolean("enableOreDictionary", catTooltips, true, "Example: oreGold", "d3.core.config.tooltips.enableOreDictionary");
 
-        final String catEnderGriefing = MODID + ".EndermanGriefing";
-        configuration.setCategoryLanguageKey(catEnderGriefing, "d3.core.config.EndermanGriefing");
+        {
+            final String catEnderGriefing = MODID + ".EndermanGriefing";
+            configuration.setCategoryLanguageKey(catEnderGriefing, "d3.core.config.EndermanGriefing");
 
-        EndermanGriefing.undo();
+            EndermanGriefing.undo();
 
-        EndermanGriefing.disable = configuration.getBoolean("disable", catEnderGriefing, false, "Disable Enderman griefing completely.", "d3.core.config.EndermanGriefing.disable");
-        EndermanGriefing.dropCarrying = configuration.getBoolean("dropCarrying", catEnderGriefing, false, "Made Enderman drop there carrying block on death.", "d3.core.config.EndermanGriefing.dropCarrying");
+            EndermanGriefing.disable = configuration.getBoolean("disable", catEnderGriefing, false, "Disable Enderman griefing completely.", "d3.core.config.EndermanGriefing.disable");
+            EndermanGriefing.dropCarrying = configuration.getBoolean("dropCarrying", catEnderGriefing, false, "Made Enderman drop there carrying block on death.", "d3.core.config.EndermanGriefing.dropCarrying");
 
-        Property property = configuration.get(catEnderGriefing, "blacklist", new String[0], "List of blocks (minecraft:stone) that will never be allowed to be picked up.");
-        property.setLanguageKey("d3.core.config.EndermanGriefing.blacklist");
-        EndermanGriefing.blacklist = property.getStringList();
+            Property property = configuration.get(catEnderGriefing, "blacklist", new String[0], "List of blocks (minecraft:stone) that will never be allowed to be picked up.");
+            property.setLanguageKey("d3.core.config.EndermanGriefing.blacklist");
+            EndermanGriefing.blacklist = property.getStringList();
 
-        property = configuration.get(catEnderGriefing, "addlist", new String[0], "List of blocks (minecraft:stone) that will be added to the list of blocks Enderman pick up.");
-        property.setLanguageKey("d3.core.config.EndermanGriefing.addlist");
-        EndermanGriefing.addList = property.getStringList();
+            property = configuration.get(catEnderGriefing, "addlist", new String[0], "List of blocks (minecraft:stone) that will be added to the list of blocks Enderman pick up.");
+            property.setLanguageKey("d3.core.config.EndermanGriefing.addlist");
+            EndermanGriefing.addList = property.getStringList();
 
-        if (pastPost) EndermanGriefing.init();
+            if (pastPost) EndermanGriefing.init();
+        }
 
         if (configuration.hasChanged()) configuration.save();
     }
