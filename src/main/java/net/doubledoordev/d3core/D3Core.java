@@ -70,6 +70,7 @@ import java.util.TreeSet;
 import static net.doubledoordev.d3core.util.CoreConstants.*;
 import static net.doubledoordev.d3core.util.FMLEventHandler.FML_EVENT_HANDLER;
 import static net.doubledoordev.d3core.util.ForgeEventHandler.FORGE_EVENT_HANDLER;
+import static net.doubledoordev.d3core.util.VoidRefunds.VOID_REFUNDS;
 
 /**
  * @author Dries007
@@ -101,7 +102,9 @@ public class D3Core implements ID3Mod
     {
         FMLCommonHandler.instance().bus().register(this);
         FMLCommonHandler.instance().bus().register(FML_EVENT_HANDLER);
+        FMLCommonHandler.instance().bus().register(VOID_REFUNDS);
         MinecraftForge.EVENT_BUS.register(FORGE_EVENT_HANDLER);
+        MinecraftForge.EVENT_BUS.register(VOID_REFUNDS);
 
         logger = event.getModLog();
 
@@ -305,6 +308,8 @@ public class D3Core implements ID3Mod
 
             if (pastPost) EndermanGriefing.init();
         }
+
+        VOID_REFUNDS.config(configuration);
 
         if (configuration.hasChanged()) configuration.save();
     }

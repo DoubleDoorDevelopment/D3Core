@@ -35,13 +35,13 @@ package net.doubledoordev.d3core.util;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.GameData;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.item.EntityEnderEye;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
@@ -59,6 +59,7 @@ public class ForgeEventHandler
     public boolean enableUnlocalizedName;
     public boolean enableOreDictionary;
     public boolean nosleep;
+    public int[] voidRefundDimensions;
 
     private ForgeEventHandler() {}
 
