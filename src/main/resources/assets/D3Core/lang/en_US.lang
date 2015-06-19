@@ -48,3 +48,4 @@ commands.d3group.help.parent.set=/d3group parent <group> set <parent group>
 commands.d3group.help.parent.clear=/d3group parent <group> clear
 
 d3.core.cmd.setloginmessage.success=Set login message!
+d3.core.cmd.setloginmessage.removed=Removed login message!
