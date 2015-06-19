@@ -32,6 +32,7 @@
 
 package net.doubledoordev.d3core;
 
+import com.google.gson.JsonParseException;
 import cpw.mods.fml.client.config.IConfigElement;
 import cpw.mods.fml.client.event.ConfigChangedEvent;
 import cpw.mods.fml.common.*;
@@ -48,6 +49,7 @@ import net.doubledoordev.d3core.permissions.PermissionsDB;
 import net.doubledoordev.d3core.permissions.cmd.CommandGroup;
 import net.doubledoordev.d3core.util.*;
 import net.doubledoordev.d3core.util.libs.org.mcstats.Metrics;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigElement;
@@ -131,7 +133,7 @@ public class D3Core implements ID3Mod
     }
 
     @Mod.EventHandler
-    public void init(FMLInitializationEvent event)
+    public void init(FMLInitializationEvent event) throws IOException
     {
         Materials.load();
 
@@ -241,7 +243,8 @@ public class D3Core implements ID3Mod
     @Mod.EventHandler
     public void serverStarting(FMLServerStartingEvent event)
     {
-        event.registerServerCommand(new CommandGroup());
+        //event.registerServerCommand(new CommandGroup());
+        event.registerServerCommand(new CommandSetLoginMessage());
     }
 
     @SubscribeEvent

@@ -32,11 +32,19 @@
 
 package net.doubledoordev.d3core.util;
 
+import com.google.gson.JsonParseException;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.relauncher.Side;
+import net.doubledoordev.d3core.D3Core;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.IChatComponent;
 import net.minecraft.world.storage.WorldInfo;
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * @author Dries007
@@ -76,6 +84,31 @@ public class FMLEventHandler
             if (event.player.sleepTimer > 90)
             {
                 event.player.sleepTimer = 90;
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void playerLoggedInEvent(PlayerEvent.PlayerLoggedInEvent event)
+    {
+        File file = new File(D3Core.getFolder(), "loginmessage.txt");
+        if (file.exists())
+        {
+            try
+            {
+                String txt = FileUtils.readFileToString(file);
+                try
+                {
+                    event.player.addChatMessage(IChatComponent.Serializer.func_150699_a(txt));
+                }
+                catch (JsonParseException jsonparseexception)
+                {
+                    event.player.addChatMessage(new ChatComponentText(txt));
+                }
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
             }
         }
     }

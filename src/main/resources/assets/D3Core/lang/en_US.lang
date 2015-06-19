@@ -46,3 +46,5 @@ commands.d3group.help.node.add=/d3group node <group> add <permission node>
 commands.d3group.help.node.remove=/d3group node <group> remove <permission node>
 commands.d3group.help.parent.set=/d3group parent <group> set <parent group>
 commands.d3group.help.parent.clear=/d3group parent <group> clear
+
+d3.core.cmd.setloginmessage.success=Set login message!
