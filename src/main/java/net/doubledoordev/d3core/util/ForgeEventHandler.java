@@ -35,14 +35,18 @@ package net.doubledoordev.d3core.util;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.GameData;
+import net.minecraft.client.Minecraft;
+import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.event.ClickEvent;
+import net.minecraft.event.HoverEvent;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.*;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -59,7 +63,7 @@ public class ForgeEventHandler
     public boolean enableUnlocalizedName;
     public boolean enableOreDictionary;
     public boolean nosleep;
-    public int[] voidRefundDimensions;
+    public boolean printDeathCoords = true;
 
     private ForgeEventHandler() {}
 
@@ -85,6 +89,23 @@ public class ForgeEventHandler
                 ItemStack stack = new ItemStack(entityEnderman.func_146080_bZ(), 1, entityEnderman.getCarryingData());
                 event.drops.add(new EntityItem(entityEnderman.worldObj, entityEnderman.posX, entityEnderman.posY, entityEnderman.posZ, stack));
             }
+        }
+    }
+
+    @SubscribeEvent()
+    public void playerDeath(LivingDeathEvent event)
+    {
+        if (event.entityLiving instanceof EntityPlayer && printDeathCoords)
+        {
+            ChatComponentText posText = new ChatComponentText("X: " + MathHelper.floor_double(event.entityLiving.posX) + " Y: " + MathHelper.floor_double(event.entityLiving.posY + 0.5d) + " Z: " + MathHelper.floor_double(event.entityLiving.posZ));
+            if (!MinecraftServer.getServer().getCommandManager().getPossibleCommands((ICommandSender) event.entityLiving, "tp").isEmpty())
+            {
+                posText.setChatStyle(new ChatStyle().setItalic(true)
+                        .setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText("Click to teleport!")))
+                        .setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tp " + event.entityLiving.posX + " " + (event.entityLiving.posY + 0.5d) + " " + event.entityLiving.posZ)));
+            }
+
+            ((EntityPlayer) event.entityLiving).addChatComponentMessage(new ChatComponentText("You died at ").setChatStyle(new ChatStyle().setColor(EnumChatFormatting.AQUA)).appendSibling(posText));
         }
     }
 

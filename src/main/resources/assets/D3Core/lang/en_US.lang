@@ -6,6 +6,9 @@ d3.core.config.core.tooltip=Applies to all D³ mods
 d3.core.config.debug=Debug mode
 d3.core.config.debug.tooltip=Please enable before making a bug report.
 
+d3.core.config.printDeathCoords=Print your death coordinates in chat (client side)
+d3.core.config.printDeathCoords.tooltip=Contains a clickable TP command thing too!
+
 d3.core.config.sillyness=Enable sillyness
 d3.core.config.sillyness.tooltip=Please don't disable, unless you want to piss off the D³ crew :p But seriously, you can disable name changes, drops and block helmets with this setting.
 
