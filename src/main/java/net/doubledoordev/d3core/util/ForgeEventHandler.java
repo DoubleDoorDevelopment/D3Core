@@ -98,11 +98,18 @@ public class ForgeEventHandler
         if (event.entityLiving instanceof EntityPlayer && printDeathCoords)
         {
             ChatComponentText posText = new ChatComponentText("X: " + MathHelper.floor_double(event.entityLiving.posX) + " Y: " + MathHelper.floor_double(event.entityLiving.posY + 0.5d) + " Z: " + MathHelper.floor_double(event.entityLiving.posZ));
-            if (!MinecraftServer.getServer().getCommandManager().getPossibleCommands((ICommandSender) event.entityLiving, "tp").isEmpty())
+            try
             {
-                posText.setChatStyle(new ChatStyle().setItalic(true)
-                        .setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText("Click to teleport!")))
-                        .setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tp " + event.entityLiving.posX + " " + (event.entityLiving.posY + 0.5d) + " " + event.entityLiving.posZ)));
+                if (!MinecraftServer.getServer().getCommandManager().getPossibleCommands((ICommandSender) event.entityLiving, "tp").isEmpty())
+                {
+                    posText.setChatStyle(new ChatStyle().setItalic(true)
+                            .setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText("Click to teleport!")))
+                            .setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tp " + event.entityLiving.posX + " " + (event.entityLiving.posY + 0.5d) + " " + event.entityLiving.posZ)));
+                }
+            }
+            catch (Exception ignored)
+            {
+
             }
 
             ((EntityPlayer) event.entityLiving).addChatComponentMessage(new ChatComponentText("You died at ").setChatStyle(new ChatStyle().setColor(EnumChatFormatting.AQUA)).appendSibling(posText));
