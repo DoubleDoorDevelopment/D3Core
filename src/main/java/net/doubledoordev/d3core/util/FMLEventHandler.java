@@ -38,8 +38,11 @@ import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.relauncher.Side;
 import net.doubledoordev.d3core.D3Core;
+import net.minecraft.block.material.Material;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
+import net.minecraft.world.World;
 import net.minecraft.world.storage.WorldInfo;
 import org.apache.commons.io.FileUtils;
 
@@ -58,6 +61,7 @@ public class FMLEventHandler
 
     public boolean norain;
     public boolean insomnia;
+    public boolean lilypad;
 
     @SubscribeEvent
     public void worldTickHandler(TickEvent.WorldTickEvent event)
@@ -110,6 +114,24 @@ public class FMLEventHandler
             {
                 e.printStackTrace();
             }
+        }
+    }
+
+    @SubscribeEvent
+    public void playerRespawnEvent(PlayerEvent.PlayerRespawnEvent event)
+    {
+        if (lilypad)
+        {
+            World world = event.player.worldObj;
+            int x = (int)(event.player.posX);
+            int y = (int)(event.player.posY);
+            int z = (int)(event.player.posZ);
+
+            if (x < 0) x --;
+            if (z < 0) z --;
+
+            while (world.getBlock(x, y, z).getMaterial() == Material.air) y--;
+            if (world.getBlock(x, y, z).getMaterial() == Material.water) world.setBlock(x, y + 1, z, Blocks.waterlily);
         }
     }
 }
