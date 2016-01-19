@@ -39,6 +39,7 @@ import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.relauncher.Side;
 import net.doubledoordev.d3core.D3Core;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
@@ -115,23 +116,32 @@ public class FMLEventHandler
                 e.printStackTrace();
             }
         }
+
+        if (lilypad) lilypad(event.player);
     }
 
     @SubscribeEvent
     public void playerRespawnEvent(PlayerEvent.PlayerRespawnEvent event)
     {
-        if (lilypad)
+        if (lilypad) lilypad(event.player);
+    }
+
+    private void lilypad(EntityPlayer player)
+    {
+        World world = player.worldObj;
+        int x = (int)(player.posX);
+        int y = (int)(player.posY);
+        int z = (int)(player.posZ);
+
+        if (x < 0) x --;
+        if (z < 0) z --;
+
+        while (world.getBlock(x, y, z).getMaterial() == Material.water) y++;
+        while (world.getBlock(x, y, z).getMaterial() == Material.air) y--;
+        if (world.getBlock(x, y, z).getMaterial() == Material.water)
         {
-            World world = event.player.worldObj;
-            int x = (int)(event.player.posX);
-            int y = (int)(event.player.posY);
-            int z = (int)(event.player.posZ);
-
-            if (x < 0) x --;
-            if (z < 0) z --;
-
-            while (world.getBlock(x, y, z).getMaterial() == Material.air) y--;
-            if (world.getBlock(x, y, z).getMaterial() == Material.water) world.setBlock(x, y + 1, z, Blocks.waterlily);
+            world.setBlock(x, y + 1, z, Blocks.waterlily);
+            player.setPositionAndUpdate(x + 0.5, y + 2, z + 0.5);
         }
     }
 }
