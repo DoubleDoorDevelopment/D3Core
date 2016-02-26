@@ -282,6 +282,7 @@ public class D3Core implements ID3Mod
         FML_EVENT_HANDLER.lilypad = configuration.getBoolean("lilypad", MODID, FML_EVENT_HANDLER.lilypad, "Spawn the player on a lilypad when in or above water.", "d3.core.config.lilypad");
         FORGE_EVENT_HANDLER.nosleep = configuration.getBoolean("nosleep", MODID, FORGE_EVENT_HANDLER.nosleep, "No sleep at all", "d3.core.config.nosleep");
         FORGE_EVENT_HANDLER.printDeathCoords = configuration.getBoolean("printDeathCoords", MODID, FORGE_EVENT_HANDLER.printDeathCoords, "Print your death coordinates in chat (client side)", "d3.core.config.printDeathCoords");
+        FORGE_EVENT_HANDLER.claysTortureMode = configuration.getBoolean("claysTortureMode", MODID, FORGE_EVENT_HANDLER.claysTortureMode, "Deletes all drops on death.", "d3.core.config.claystorturemode");
         getDevPerks().update(sillyness);
 
         final String catTooltips = MODID + ".tooltips";

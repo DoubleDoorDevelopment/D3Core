@@ -64,6 +64,7 @@ public class ForgeEventHandler
     public boolean enableOreDictionary;
     public boolean nosleep;
     public boolean printDeathCoords = true;
+    public boolean claysTortureMode;
 
     private ForgeEventHandler() {}
 
@@ -81,7 +82,11 @@ public class ForgeEventHandler
     @SubscribeEvent()
     public void entityDeathEvent(LivingDropsEvent event)
     {
-        if (event.entityLiving instanceof EntityEnderman && EndermanGriefing.dropCarrying)
+        if (event.entityLiving instanceof EntityPlayer && claysTortureMode)
+        {
+            event.setCanceled(true);
+        }
+        else if (event.entityLiving instanceof EntityEnderman && EndermanGriefing.dropCarrying)
         {
             EntityEnderman entityEnderman = ((EntityEnderman) event.entityLiving);
             if (entityEnderman.func_146080_bZ() != Blocks.air)
