@@ -136,8 +136,11 @@ public class FMLEventHandler
         if (x < 0) x --;
         if (z < 0) z --;
 
-        while (world.getBlock(x, y, z).getMaterial() == Material.water) y++;
-        while (world.getBlock(x, y, z).getMaterial() == Material.air) y--;
+        int limiter = world.getActualHeight() * 2;
+
+        while (world.getBlock(x, y, z).getMaterial() == Material.water && --limiter != 0) y++;
+        while (world.getBlock(x, y, z).getMaterial() == Material.air && --limiter != 0) y--;
+        if (limiter == 0) return;
         if (world.getBlock(x, y, z).getMaterial() == Material.water)
         {
             world.setBlock(x, y + 1, z, Blocks.waterlily);

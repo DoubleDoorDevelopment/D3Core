@@ -99,13 +99,13 @@ public class D3Core implements ID3Mod
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
+        logger = event.getModLog();
+
         FMLCommonHandler.instance().bus().register(this);
         FMLCommonHandler.instance().bus().register(FML_EVENT_HANDLER);
         FMLCommonHandler.instance().bus().register(VOID_REFUNDS);
         MinecraftForge.EVENT_BUS.register(FORGE_EVENT_HANDLER);
         MinecraftForge.EVENT_BUS.register(VOID_REFUNDS);
-
-        logger = event.getModLog();
 
         folder = new File(event.getModConfigurationDirectory(), MODID);
         folder.mkdir();
