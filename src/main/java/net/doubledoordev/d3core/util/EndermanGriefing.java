@@ -40,7 +40,7 @@ public class EndermanGriefing
             for (String item : addList)
             {
                 List<Block> blocks = matchBlock(item);
-                if (blocks.isEmpty())  D3Core.getLogger().warn("[EndermanGriefing]  '{}' does not match any block...", item);
+                if (blocks.isEmpty())  D3Core.getLogger().warn("[EndermanGriefing] '{}' does not match any block...", item);
                 else
                 {
                     for (Block block : blocks)
@@ -71,6 +71,7 @@ public class EndermanGriefing
 
     private static List<Block> matchBlock(String item)
     {
+        boolean ignored = false;
         ArrayList<Block> blocks = new ArrayList<>();
         Pattern pattern = Pattern.compile(item.replace("*", ".*?"));
         FMLControlledNamespacedRegistry<Block> blockData = GameData.getBlockRegistry();
@@ -78,10 +79,11 @@ public class EndermanGriefing
         {
             if (pattern.matcher(blockData.getNameForObject(block)).matches())
             {
-                if (blockData.getId(block) > 255) D3Core.getLogger().warn("[EndermanGriefing] Blocks with ID > 255 won't work! Not accepting {}", blockData.getNameForObject(block));
+                if (blockData.getId(block) > 255) ignored = true;
                 else blocks.add(block);
             }
         }
+        if (ignored) D3Core.getLogger().warn("[EndermanGriefing] Blocks with ID > 255 won't work! Some blocks matching {} have been ignored.", item);
         return blocks;
     }
 
