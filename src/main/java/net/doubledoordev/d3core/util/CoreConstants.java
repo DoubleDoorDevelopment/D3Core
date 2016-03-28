@@ -35,7 +35,17 @@ package net.doubledoordev.d3core.util;
 import com.google.common.base.Joiner;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import net.doubledoordev.d3core.D3Core;
 import net.doubledoordev.d3core.permissions.Node;
+import net.minecraft.entity.item.EntityFireworkRocket;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+
+import java.util.Calendar;
+import java.util.Random;
 
 /**
  * @author Dries007
@@ -53,4 +63,60 @@ public class CoreConstants
     public static final String MOD_GUI_FACTORY = "net.doubledoordev.d3core.client.ModConfigGuiFactory";
     public static final Gson   GSON = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(Node.class, new Node.JsonHelper()).create();
     public static final Joiner JOINER_DOT = Joiner.on('.');
+    public static final Random RANDOM = new Random();
+
+    public static boolean isAprilFools()
+    {
+        //noinspection MagicConstant
+        return D3Core.aprilFools ;//&& Calendar.getInstance().get(Calendar.MONTH) == Calendar.APRIL && Calendar.getInstance().get(Calendar.DAY_OF_MONTH) == 1;
+    }
+
+    public static void spawnRandomFireworks(EntityPlayer target, int rad, int rockets)
+    {
+        while (rockets -- > 0)
+        {
+            ItemStack itemStack = new ItemStack(Items.fireworks);
+            NBTTagCompound fireworks = new NBTTagCompound();
+            NBTTagList explosions = new NBTTagList();
+
+            int charges = 1 + CoreConstants.RANDOM.nextInt(3);
+            while (charges -- > 0)
+            {
+                NBTTagCompound explosion = new NBTTagCompound();
+
+                if (CoreConstants.RANDOM.nextBoolean()) explosion.setBoolean("Flicker", true);
+                if (CoreConstants.RANDOM.nextBoolean()) explosion.setBoolean("Trail", true);
+
+                int[] colors = new int[1 + CoreConstants.RANDOM.nextInt(3)];
+
+                for (int i = 0; i < colors.length; i++)
+                {
+                    colors[i] = (CoreConstants.RANDOM.nextInt(256) << 16) + (CoreConstants.RANDOM.nextInt(256) << 8) + CoreConstants.RANDOM.nextInt(256);
+                }
+
+                explosion.setIntArray("Colors", colors);
+                explosion.setByte("Type", (byte) CoreConstants.RANDOM.nextInt(5));
+
+                if (CoreConstants.RANDOM.nextBoolean())
+                {
+                    int[] fadeColors = new int[1 + CoreConstants.RANDOM.nextInt(3)];
+
+                    for (int i = 0; i < fadeColors.length; i++)
+                    {
+                        fadeColors[i] = (CoreConstants.RANDOM.nextInt(256) << 16) + (CoreConstants.RANDOM.nextInt(256) << 8) + CoreConstants.RANDOM.nextInt(256);
+                    }
+                    explosion.setIntArray("FadeColors", fadeColors);
+                }
+
+                explosions.appendTag(explosion);
+            }
+            fireworks.setTag("Explosions", explosions);
+            fireworks.setByte("Flight", (byte) (CoreConstants.RANDOM.nextInt(2)));
+
+            NBTTagCompound root = new NBTTagCompound();
+            root.setTag("Fireworks", fireworks);
+            itemStack.setTagCompound(root);
+            target.worldObj.spawnEntityInWorld(new EntityFireworkRocket(target.worldObj, target.posX + CoreConstants.RANDOM.nextInt(rad) - rad / 2.0, target.posY, target.posZ + CoreConstants.RANDOM.nextInt(rad) - rad / 2.0, itemStack));
+        }
+    }
 }

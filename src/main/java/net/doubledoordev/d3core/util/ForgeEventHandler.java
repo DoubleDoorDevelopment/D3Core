@@ -35,21 +35,21 @@ package net.doubledoordev.d3core.util;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.GameData;
-import net.minecraft.client.Minecraft;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.event.HoverEvent;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.*;
+import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -124,9 +124,54 @@ public class ForgeEventHandler
     @SubscribeEvent()
     public void sleepEvent(PlayerSleepInBedEvent event)
     {
-        if (nosleep)
+        if (nosleep || CoreConstants.isAprilFools())
         {
             event.result = EntityPlayer.EnumStatus.OTHER_PROBLEM;
+        }
+    }
+
+    @SubscribeEvent
+    public void aprilFools(ServerChatEvent event)
+    {
+        if (CoreConstants.isAprilFools())
+        {
+            ChatStyle style = event.component.getChatStyle();
+            float chance = 0.25f;
+            if (CoreConstants.RANDOM.nextFloat() < chance)
+            {
+                style.setBold(true);
+                chance *= chance;
+            }
+            if (CoreConstants.RANDOM.nextFloat() < chance)
+            {
+                style.setItalic(true);
+                chance *= chance;
+            }
+            if (CoreConstants.RANDOM.nextFloat() < chance)
+            {
+                style.setUnderlined(true);
+                chance *= chance;
+            }
+            if (CoreConstants.RANDOM.nextFloat() < chance)
+            {
+                style.setStrikethrough(true);
+                chance *= chance;
+            }
+            if (CoreConstants.RANDOM.nextFloat() < chance)
+            {
+                style.setObfuscated(true);
+            }
+            style.setColor(EnumChatFormatting.values()[CoreConstants.RANDOM.nextInt(EnumChatFormatting.values().length)]);
+            event.component.setChatStyle(style);
+        }
+    }
+
+    @SubscribeEvent
+    public void aprilFools(PlayerEvent.NameFormat event)
+    {
+        if (CoreConstants.isAprilFools())
+        {
+            event.displayname = "§k" + event.displayname;
         }
     }
 }

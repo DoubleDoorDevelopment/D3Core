@@ -79,6 +79,7 @@ public class D3Core implements ID3Mod
 {
     @Mod.Instance(MODID)
     public static D3Core instance;
+    public static boolean aprilFools = true;
     private File folder;
 
     @Mod.Metadata
@@ -283,6 +284,7 @@ public class D3Core implements ID3Mod
         FORGE_EVENT_HANDLER.nosleep = configuration.getBoolean("nosleep", MODID, FORGE_EVENT_HANDLER.nosleep, "No sleep at all", "d3.core.config.nosleep");
         FORGE_EVENT_HANDLER.printDeathCoords = configuration.getBoolean("printDeathCoords", MODID, FORGE_EVENT_HANDLER.printDeathCoords, "Print your death coordinates in chat (client side)", "d3.core.config.printDeathCoords");
         FORGE_EVENT_HANDLER.claysTortureMode = configuration.getBoolean("claysTortureMode", MODID, FORGE_EVENT_HANDLER.claysTortureMode, "Deletes all drops on death.", "d3.core.config.claystorturemode");
+        aprilFools = configuration.getBoolean("aprilFools", MODID, aprilFools, "What would this do...");
         getDevPerks().update(sillyness);
 
         final String catTooltips = MODID + ".tooltips";

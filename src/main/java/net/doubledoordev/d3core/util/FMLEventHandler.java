@@ -39,8 +39,10 @@ import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.relauncher.Side;
 import net.doubledoordev.d3core.D3Core;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.world.World;
@@ -79,6 +81,7 @@ public class FMLEventHandler
         }
     }
 
+    int aprilFoolsDelay = 0;
     @SubscribeEvent
     public void playerTickHandler(TickEvent.PlayerTickEvent event)
     {
@@ -89,6 +92,16 @@ public class FMLEventHandler
             if (event.player.sleepTimer > 90)
             {
                 event.player.sleepTimer = 90;
+            }
+        }
+
+
+        if (CoreConstants.isAprilFools())
+        {
+            if (aprilFoolsDelay-- == 0)
+            {
+                aprilFoolsDelay = 100 * (5 + CoreConstants.RANDOM.nextInt(MinecraftServer.getServer().getCurrentPlayerCount()));
+                CoreConstants.spawnRandomFireworks(event.player, 1 + CoreConstants.RANDOM.nextInt(5), 1 + CoreConstants.RANDOM.nextInt(5));
             }
         }
     }
@@ -118,12 +131,14 @@ public class FMLEventHandler
         }
 
         if (lilypad) lilypad(event.player);
+        if (CoreConstants.isAprilFools()) CoreConstants.spawnRandomFireworks(event.player, 1 + CoreConstants.RANDOM.nextInt(5), 1 + CoreConstants.RANDOM.nextInt(5));
     }
 
     @SubscribeEvent
     public void playerRespawnEvent(PlayerEvent.PlayerRespawnEvent event)
     {
         if (lilypad) lilypad(event.player);
+        if (CoreConstants.isAprilFools()) CoreConstants.spawnRandomFireworks(event.player, 1 + CoreConstants.RANDOM.nextInt(5), 1 + CoreConstants.RANDOM.nextInt(5));
     }
 
     private void lilypad(EntityPlayer player)
