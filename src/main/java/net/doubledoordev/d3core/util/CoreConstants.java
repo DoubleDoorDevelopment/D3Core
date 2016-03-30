@@ -68,7 +68,7 @@ public class CoreConstants
     public static boolean isAprilFools()
     {
         //noinspection MagicConstant
-        return D3Core.aprilFools ;//&& Calendar.getInstance().get(Calendar.MONTH) == Calendar.APRIL && Calendar.getInstance().get(Calendar.DAY_OF_MONTH) == 1;
+        return D3Core.aprilFools && Calendar.getInstance().get(Calendar.MONTH) == Calendar.APRIL && Calendar.getInstance().get(Calendar.DAY_OF_MONTH) == 1;
     }
 
     public static void spawnRandomFireworks(EntityPlayer target, int rad, int rockets)
