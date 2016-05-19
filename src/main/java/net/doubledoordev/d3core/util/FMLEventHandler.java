@@ -33,18 +33,22 @@
 package net.doubledoordev.d3core.util;
 
 import com.google.gson.JsonParseException;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.relauncher.Side;
+
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.relauncher.Side;
 import net.doubledoordev.d3core.D3Core;
+
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.WorldInfo;
 import org.apache.commons.io.FileUtils;
@@ -100,7 +104,7 @@ public class FMLEventHandler
         {
             if (aprilFoolsDelay-- == 0)
             {
-                aprilFoolsDelay = 100 * (5 + CoreConstants.RANDOM.nextInt(MinecraftServer.getServer().getCurrentPlayerCount()));
+                aprilFoolsDelay = 100 * (5 + CoreConstants.RANDOM.nextInt(FMLCommonHandler.instance().getMinecraftServerInstance().getCurrentPlayerCount()));
                 CoreConstants.spawnRandomFireworks(event.player, 1 + CoreConstants.RANDOM.nextInt(5), 1 + CoreConstants.RANDOM.nextInt(5));
             }
         }
@@ -117,11 +121,11 @@ public class FMLEventHandler
                 String txt = FileUtils.readFileToString(file);
                 try
                 {
-                    event.player.addChatMessage(IChatComponent.Serializer.func_150699_a(txt));
+                    event.player.addChatMessage(ITextComponent.Serializer.jsonToComponent(txt));
                 }
                 catch (JsonParseException jsonparseexception)
                 {
-                    event.player.addChatMessage(new ChatComponentText(txt));
+                    event.player.addChatMessage(new TextComponentString(txt));
                 }
             }
             catch (IOException e)
@@ -144,22 +148,21 @@ public class FMLEventHandler
     private void lilypad(EntityPlayer player)
     {
         World world = player.worldObj;
-        int x = (int)(player.posX);
-        int y = (int)(player.posY);
-        int z = (int)(player.posZ);
 
-        if (x < 0) x --;
-        if (z < 0) z --;
+        BlockPos blockPos = new BlockPos((int)(player.posX),(int)(player.posY),(int)(player.posZ));
+
+        if (blockPos.getX() < 0) blockPos.add(-1,0,0);
+        if (blockPos.getZ() < 0) blockPos.add(0,0,-1);
 
         int limiter = world.getActualHeight() * 2;
 
-        while (world.getBlock(x, y, z).getMaterial() == Material.water && --limiter != 0) y++;
-        while (world.getBlock(x, y, z).getMaterial() == Material.air && --limiter != 0) y--;
+        while (world.getBlockState(blockPos).getMaterial() == Material.WATER && --limiter != 0) blockPos.add(0,1,0);
+        while (world.getBlockState(blockPos).getMaterial() == Material.AIR && --limiter != 0) blockPos.add(0,-1,0);
         if (limiter == 0) return;
-        if (world.getBlock(x, y, z).getMaterial() == Material.water)
+        if (world.getBlockState(blockPos).getMaterial() == Material.WATER)
         {
-            world.setBlock(x, y + 1, z, Blocks.waterlily);
-            player.setPositionAndUpdate(x + 0.5, y + 2, z + 0.5);
+            world.setBlockState(blockPos.add(0,1,0), Blocks.WATERLILY.getDefaultState());
+            player.setPositionAndUpdate(blockPos.getX() + 0.5,blockPos.getY() + 2,blockPos.getZ() + 0.5);
         }
     }
 }

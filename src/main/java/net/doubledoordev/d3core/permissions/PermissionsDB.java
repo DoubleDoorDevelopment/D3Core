@@ -34,10 +34,14 @@ package net.doubledoordev.d3core.permissions;
 
 import com.mojang.authlib.GameProfile;
 import net.doubledoordev.d3core.D3Core;
+
+import net.minecraft.client.Minecraft;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.rcon.RConConsoleSource;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.World;
+
 import org.apache.commons.io.FileUtils;
 import sun.security.krb5.internal.crypto.Des3;
 
@@ -46,6 +50,10 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.UUID;
+
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
 
 import static net.doubledoordev.d3core.util.CoreConstants.GSON;
 
@@ -144,12 +152,12 @@ public class PermissionsDB
 
     public boolean checkPermissions(ICommandSender sender, Node node)
     {
-        if (sender.getCommandSenderName().equals(MinecraftServer.getServer().getServerOwner())) return true;
-        else if (sender == MinecraftServer.getServer()) return true;
-        else if (sender == RConConsoleSource.instance) return true;
+        if (sender.getName().equals(FMLCommonHandler.instance().getMinecraftServerInstance().getServerOwner())) return true;
+        else if (sender == FMLCommonHandler.instance().getMinecraftServerInstance()) return true;
+        else if (sender instanceof RConConsoleSource) return true;
         else if (sender instanceof EntityPlayer) return checkPermissions(((EntityPlayer) sender).getGameProfile().getId(), node);
 
-        D3Core.getLogger().warn("checkPermissions: " + sender.getCommandSenderName()); // TODO: when does this happends.
+        D3Core.getLogger().warn("checkPermissions: " + sender.getName()); // TODO: when does this happends.
         return false;
     }
 

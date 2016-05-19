@@ -38,6 +38,7 @@ import net.doubledoordev.d3core.permissions.PermissionsDB;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.server.MinecraftServer;
 
 /**
  * @author Dries007
@@ -45,10 +46,16 @@ import net.minecraft.entity.player.EntityPlayer;
 public abstract class CommandPermissionBase extends CommandBase
 {
     @Override
-    public boolean canCommandSenderUseCommand(ICommandSender sender)
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender)
     {
         if (sender instanceof EntityPlayer) return PermissionsDB.INSTANCE.checkPermissions(sender, getBasePermission());
-        else return super.canCommandSenderUseCommand(sender);
+        else return super.checkPermission(sender.getServer(),sender);
+    }
+
+    public boolean checkPermission(ICommandSender sender)
+    {
+        if (sender instanceof EntityPlayer) return PermissionsDB.INSTANCE.checkPermissions(sender, getBasePermission());
+        else return super.checkPermission(sender.getServer(),sender);
     }
 
     public Node getBasePermission()

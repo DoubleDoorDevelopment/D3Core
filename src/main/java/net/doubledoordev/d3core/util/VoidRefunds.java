@@ -32,10 +32,10 @@
 
 package net.doubledoordev.d3core.util;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.EventPriority;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -74,16 +74,16 @@ public class VoidRefunds
     public void livingDeathEvent(LivingDeathEvent event)
     {
         if (FMLCommonHandler.instance().getEffectiveSide().isClient()) return;
-        if (event.source != DamageSource.outOfWorld || !(event.entity instanceof EntityPlayer)) return;
-        if (event.entityLiving.lastDamage >= (Float.MAX_VALUE / 2)) return; // try to ignore /kill command
+        if (event.getSource() != DamageSource.outOfWorld || !(event.getEntity() instanceof EntityPlayer)) return;
+        if (event.getEntityLiving().lastDamage >= (Float.MAX_VALUE / 2)) return; // try to ignore /kill command
         for (int dim : voidRefundDimensions)
         {
-            if (dim != event.entity.dimension) continue;
+            if (dim != event.getEntity().dimension) continue;
             event.setCanceled(true);
 
             InventoryPlayer tempCopy = new InventoryPlayer(null);
-            tempCopy.copyInventory(((EntityPlayer) event.entity).inventory);
-            map.put(event.entity.getPersistentID(), tempCopy);
+            tempCopy.copyInventory(((EntityPlayer) event.getEntity()).inventory);
+            map.put(event.getEntity().getPersistentID(), tempCopy);
         }
     }
 
