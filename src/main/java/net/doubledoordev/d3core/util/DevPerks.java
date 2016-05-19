@@ -33,10 +33,10 @@ package net.doubledoordev.d3core.util;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.EventPriority;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.registry.GameData;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.GameData;
 import net.doubledoordev.d3core.D3Core;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
@@ -46,6 +46,8 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+
 import org.apache.commons.io.IOUtils;
 
 import java.net.URL;
@@ -76,7 +78,7 @@ public class DevPerks
     {
         int meta = data.has("meta") ? data.get("meta").getAsInt() : defaultMeta;
         int size = data.has("size") ? data.get("size").getAsInt() : defaultStacksize;
-        ItemStack stack = new ItemStack(GameData.getItemRegistry().getObject(data.get("name").getAsString()), size, meta);
+        ItemStack stack = GameRegistry.makeItemStack(data.get("name").getAsString(), size, meta,null);
         if (data.has("display")) stack.setStackDisplayName(data.get("display").getAsString());
         if (data.has("color"))
         {
@@ -110,15 +112,15 @@ public class DevPerks
         try
         {
             if (D3Core.debug()) perks = new JsonParser().parse(IOUtils.toString(new URL(CoreConstants.PERKSURL), Charset.forName("UTF-8"))).getAsJsonObject();
-            if (perks.has(event.username))
+            if (perks.has(event.getUsername()))
             {
-                JsonObject perk = perks.getAsJsonObject(event.username);
-                if (perk.has("displayname")) event.displayname = perk.get("displayname").getAsString();
-                if (perk.has("hat") && (event.entityPlayer.inventory.armorInventory[3] == null || event.entityPlayer.inventory.armorInventory[3].stackSize == 0))
+                JsonObject perk = perks.getAsJsonObject(event.getUsername());
+                if (perk.has("displayname")) event.setDisplayname(perk.get("displayname").getAsString());
+                if (perk.has("hat") && (event.getEntityPlayer().inventory.armorInventory[3] == null || event.getEntityPlayer().inventory.armorInventory[3].stackSize == 0))
                 {
                     ItemStack hat = getItemStackFromJson(perk.getAsJsonObject("hat"), 0, 0);
                     hat.stackSize = 0;
-                    event.entityPlayer.inventory.armorInventory[3] = hat;
+                    event.getEntityPlayer().inventory.armorInventory[3] = hat;
                 }
             }
         }
@@ -134,14 +136,14 @@ public class DevPerks
         try
         {
             if (D3Core.debug()) perks = new JsonParser().parse(IOUtils.toString(new URL(CoreConstants.PERKSURL), Charset.forName("UTF-8"))).getAsJsonObject();
-            if (perks.has(event.original.getCommandSenderName()))
+            if (perks.has(event.getOriginal().getCommandSenderEntity().getName()))
             {
-                JsonObject perk = perks.getAsJsonObject(event.original.getCommandSenderName());
-                if (perk.has("hat") && (event.entityPlayer.inventory.armorInventory[3] == null || event.entityPlayer.inventory.armorInventory[3].stackSize == 0))
+                JsonObject perk = perks.getAsJsonObject(event.getOriginal().getCommandSenderEntity().getName());
+                if (perk.has("hat") && (event.getEntityPlayer().inventory.armorInventory[3] == null || event.getEntityPlayer().inventory.armorInventory[3].stackSize == 0))
                 {
                     ItemStack hat = getItemStackFromJson(perk.getAsJsonObject("hat"), 0, 0);
                     hat.stackSize = 0;
-                    event.entityPlayer.inventory.armorInventory[3] = hat;
+                    event.getEntityPlayer().inventory.armorInventory[3] = hat;
                 }
             }
         }
@@ -157,12 +159,12 @@ public class DevPerks
         try
         {
             if (D3Core.debug()) perks = new JsonParser().parse(IOUtils.toString(new URL(CoreConstants.PERKSURL), Charset.forName("UTF-8"))).getAsJsonObject();
-            if (perks.has(event.entityPlayer.getCommandSenderName()))
+            if (perks.has(event.getEntityPlayer().getCommandSenderEntity().getName()))
             {
-                JsonObject perk = perks.getAsJsonObject(event.entityPlayer.getCommandSenderName());
+                JsonObject perk = perks.getAsJsonObject(event.getEntityPlayer().getCommandSenderEntity().getName());
                 if (perk.has("drop"))
                 {
-                    event.drops.add(new EntityItem(event.entityPlayer.getEntityWorld(), event.entityPlayer.posX, event.entityPlayer.posY, event.entityPlayer.posZ, getItemStackFromJson(perk.getAsJsonObject("drop"), 0, 1)));
+                    event.getDrops().add(new EntityItem(event.getEntityPlayer().getEntityWorld(), event.getEntityPlayer().posX, event.getEntityPlayer().posY, event.getEntityPlayer().posZ, getItemStackFromJson(perk.getAsJsonObject("drop"), 0, 1)));
                 }
             }
         }

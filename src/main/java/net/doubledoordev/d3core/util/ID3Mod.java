@@ -32,7 +32,7 @@
 
 package net.doubledoordev.d3core.util;
 
-import cpw.mods.fml.client.config.IConfigElement;
+import net.minecraftforge.fml.client.config.IConfigElement;
 
 import java.util.List;
 
