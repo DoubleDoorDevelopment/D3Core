@@ -31,18 +31,11 @@
  */
 
 package net.doubledoordev.d3core.permissions.cmd;
-
 import net.doubledoordev.d3core.permissions.Node;
-import net.doubledoordev.d3core.permissions.PermConstants;
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentTranslation;
-
-import net.minecraft.util.text.translation.I18n;
-
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
 
 import static net.doubledoordev.d3core.permissions.PermConstants.PERMISSIONS_PREFIX;
 
@@ -64,33 +57,22 @@ public class CommandGroup extends CommandPermissionBase
     }
 
     @Override
-    public void execute(MinecraftServer server, ICommandSender sender, String[] args)
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws WrongUsageException
     {
-        if (args.length == 0)
+        if (args.length == 0) throw new WrongUsageException(getCommandUsage(sender));
+
+        switch(args[0].toLowerCase())
         {
-            try
-            {
+            case "help":
+                sender.addChatMessage(new TextComponentTranslation("commands.d3group.help.new"));
+                sender.addChatMessage(new TextComponentTranslation("commands.d3group.help.remove"));
+                sender.addChatMessage(new TextComponentTranslation("commands.d3group.help.node.add"));
+                sender.addChatMessage(new TextComponentTranslation("commands.d3group.help.node.remove"));
+                sender.addChatMessage(new TextComponentTranslation("commands.d3group.help.parent.set"));
+                sender.addChatMessage(new TextComponentTranslation("commands.d3group.help.parent.clear"));
+                break;
+            default:
                 throw new WrongUsageException(getCommandUsage(sender));
-            }
-            catch (Exception e)
-            {}
-        }
-        if(args[0].toLowerCase()=="help") {
-            sender.addChatMessage(new TextComponentTranslation("commands.d3group.help.new"));
-            sender.addChatMessage(new TextComponentTranslation("commands.d3group.help.remove"));
-            sender.addChatMessage(new TextComponentTranslation("commands.d3group.help.node.add"));
-            sender.addChatMessage(new TextComponentTranslation("commands.d3group.help.node.remove"));
-            sender.addChatMessage(new TextComponentTranslation("commands.d3group.help.parent.set"));
-            sender.addChatMessage(new TextComponentTranslation("commands.d3group.help.parent.clear"));
-        }
-        else
-        {
-            try
-            {
-                throw new WrongUsageException(getCommandUsage(sender));
-            }
-            catch (Exception e)
-            {}
         }
 
     }
