@@ -35,6 +35,7 @@ package net.doubledoordev.d3core.util;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.GameData;
+import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityEnderman;
@@ -62,6 +63,7 @@ public class ForgeEventHandler
     public boolean enableStringID;
     public boolean enableUnlocalizedName;
     public boolean enableOreDictionary;
+    public boolean enableBurnTime;
     public boolean nosleep;
     public boolean printDeathCoords = true;
     public boolean claysTortureMode;
@@ -76,6 +78,7 @@ public class ForgeEventHandler
             if (enableStringID) event.toolTip.add(EnumChatFormatting.DARK_AQUA + GameData.getItemRegistry().getNameForObject(event.itemStack.getItem()));
             if (enableUnlocalizedName) event.toolTip.add(EnumChatFormatting.DARK_GREEN + event.itemStack.getUnlocalizedName());
             if (enableOreDictionary) for (int id : OreDictionary.getOreIDs(event.itemStack)) event.toolTip.add(EnumChatFormatting.DARK_PURPLE + OreDictionary.getOreName(id));
+            if (enableBurnTime && GameRegistry.getFuelValue(event.itemStack) != 0) event.toolTip.add(EnumChatFormatting.GOLD + "Burns for " + GameRegistry.getFuelValue(event.itemStack) + " ticks");
         }
     }
 
