@@ -45,6 +45,7 @@ import net.minecraft.event.HoverEvent;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.*;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -78,7 +79,7 @@ public class ForgeEventHandler
             if (enableStringID) event.toolTip.add(EnumChatFormatting.DARK_AQUA + GameData.getItemRegistry().getNameForObject(event.itemStack.getItem()));
             if (enableUnlocalizedName) event.toolTip.add(EnumChatFormatting.DARK_GREEN + event.itemStack.getUnlocalizedName());
             if (enableOreDictionary) for (int id : OreDictionary.getOreIDs(event.itemStack)) event.toolTip.add(EnumChatFormatting.DARK_PURPLE + OreDictionary.getOreName(id));
-            if (enableBurnTime && GameRegistry.getFuelValue(event.itemStack) != 0) event.toolTip.add(EnumChatFormatting.GOLD + "Burns for " + GameRegistry.getFuelValue(event.itemStack) + " ticks");
+            if (enableBurnTime && TileEntityFurnace.isItemFuel(event.itemStack)) event.toolTip.add(EnumChatFormatting.GOLD + "Burns for " + TileEntityFurnace.getItemBurnTime(event.itemStack) + " ticks");
         }
     }
 
