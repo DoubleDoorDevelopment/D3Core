@@ -27,6 +27,7 @@ configurations {
 
 apply plugin: "net.minecraftforge.gradle.forge"
 apply plugin: "idea-utils"
+apply plugin: "maven"
 
 group = "net.doubledoordev.d3core"
 version = "1.2.0"
