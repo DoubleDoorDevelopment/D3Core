@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014,
+ * Copyright (c) 2014-2016, Dries007 & DoubleDoorDevelopment
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -12,7 +12,7 @@
  *   this list of conditions and the following disclaimer in the documentation
  *   and/or other materials provided with the distribution.
  *
- *  Neither the name of the {organization} nor the names of its
+ *  Neither the name of DoubleDoorDevelopment nor the names of its
  *   contributors may be used to endorse or promote products derived from
  *   this software without specific prior written permission.
  *
@@ -27,16 +27,14 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- *
  */
 
 package net.doubledoordev.d3core.util;
 
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
-import net.minecraft.command.ICommandSender;
+import com.google.gson.JsonParseException;
+import net.doubledoordev.d3core.D3Core;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.player.EntityPlayer;
@@ -44,27 +42,40 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.util.text.event.HoverEvent;
-
+import net.minecraft.world.World;
+import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.player.AchievementEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.oredict.OreDictionary;
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * @author Dries007
  */
-public class ForgeEventHandler
+public class EventHandler
 {
-    public static final ForgeEventHandler FORGE_EVENT_HANDLER = new ForgeEventHandler();
+    public static final EventHandler I = new EventHandler();
     public boolean enableStringID;
     public boolean enableUnlocalizedName;
     public boolean enableOreDictionary;
@@ -72,8 +83,12 @@ public class ForgeEventHandler
     public boolean nosleep;
     public boolean printDeathCoords = true;
     public boolean claysTortureMode;
+    public boolean norain;
+    public boolean insomnia;
+    public boolean lilypad;
+    public boolean achievementFireworks;
 
-    private ForgeEventHandler() {}
+    private EventHandler() {}
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void itemTooltipEventHandler(ItemTooltipEvent event)
@@ -87,6 +102,12 @@ public class ForgeEventHandler
         }
     }
 
+    @SubscribeEvent
+    public void achievementEvent(AchievementEvent event)
+    {
+        if (achievementFireworks) CoreConstants.spawnRandomFireworks(event.getEntityPlayer(), 1, 1);
+    }
+
     @SubscribeEvent()
     public void entityDeathEvent(LivingDropsEvent event)
     {
@@ -97,9 +118,10 @@ public class ForgeEventHandler
         else if (event.getEntityLiving() instanceof EntityEnderman && EndermanGriefing.dropCarrying)
         {
             EntityEnderman entityEnderman = ((EntityEnderman) event.getEntityLiving());
-            if (entityEnderman.getHeldBlockState() != Blocks.AIR)
+            IBlockState state = entityEnderman.getHeldBlockState();
+            if (state != null && state.getBlock() != Blocks.AIR)
             {
-                ItemStack stack = new ItemStack(entityEnderman.getHeldBlockState().getBlock(), 1, entityEnderman.getHeldBlockState().getBlock().getMetaFromState(entityEnderman.getHeldBlockState()));
+                ItemStack stack = new ItemStack(state.getBlock(), 1, state.getBlock().getMetaFromState(state));
                 event.getDrops().add(new EntityItem(entityEnderman.worldObj, entityEnderman.posX, entityEnderman.posY, entityEnderman.posZ, stack));
             }
         }
@@ -114,7 +136,7 @@ public class ForgeEventHandler
             try
             {
                 MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-                if (!server.getCommandManager().getPossibleCommands((ICommandSender) event.getEntityLiving()).contains(server.getCommandManager().getCommands().get("tp")))
+                if (!server.getCommandManager().getPossibleCommands(event.getEntityLiving()).contains(server.getCommandManager().getCommands().get("tp")))
                 {
                     posText.setStyle(new Style().setItalic(true)
                             .setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponentString("Click to teleport!")))
@@ -133,7 +155,7 @@ public class ForgeEventHandler
     @SubscribeEvent()
     public void sleepEvent(PlayerSleepInBedEvent event)
     {
-        if (nosleep || CoreConstants.isAprilFools())
+        if (nosleep || D3Core.isAprilFools())
         {
             event.setResult(EntityPlayer.SleepResult.OTHER_PROBLEM);
         }
@@ -142,7 +164,7 @@ public class ForgeEventHandler
     @SubscribeEvent
     public void aprilFools(ServerChatEvent event)
     {
-        if (CoreConstants.isAprilFools())
+        if (D3Core.isAprilFools())
         {
 
             Style style = event.getComponent().getStyle();
@@ -180,9 +202,105 @@ public class ForgeEventHandler
     @SubscribeEvent
     public void aprilFools(PlayerEvent.NameFormat event)
     {
-        if (CoreConstants.isAprilFools())
+        if (D3Core.isAprilFools())
         {
             event.setDisplayname("§k" + event.getDisplayname());
+        }
+    }
+
+    @SubscribeEvent
+    public void worldTickHandler(TickEvent.WorldTickEvent event)
+    {
+        if (event.side != Side.SERVER || event.phase != TickEvent.Phase.START) return;
+
+        if (norain)
+        {
+            WorldInfo worldInfo = event.world.getWorldInfo();
+            worldInfo.setThundering(false);
+            worldInfo.setRaining(false);
+            worldInfo.setRainTime(Integer.MAX_VALUE);
+            worldInfo.setThunderTime(Integer.MAX_VALUE);
+        }
+    }
+
+    private int aprilFoolsDelay = 0;
+    @SubscribeEvent
+    public void playerTickHandler(TickEvent.PlayerTickEvent event)
+    {
+        if (event.side != Side.SERVER || event.phase != TickEvent.Phase.START) return;
+
+        if (insomnia)
+        {
+            if (event.player.sleepTimer > 90)
+            {
+                event.player.sleepTimer = 90;
+            }
+        }
+
+
+        if (D3Core.isAprilFools())
+        {
+            if (aprilFoolsDelay-- <= 0)
+            {
+                aprilFoolsDelay = 100 * (5 + CoreConstants.RANDOM.nextInt(FMLCommonHandler.instance().getMinecraftServerInstance().getCurrentPlayerCount()));
+                CoreConstants.spawnRandomFireworks(event.player, 1 + CoreConstants.RANDOM.nextInt(5), 1 + CoreConstants.RANDOM.nextInt(5));
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void playerLoggedInEvent(net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent event)
+    {
+        File file = new File(D3Core.getFolder(), "loginmessage.txt");
+        if (file.exists())
+        {
+            try
+            {
+                String txt = FileUtils.readFileToString(file);
+                try
+                {
+                    event.player.addChatMessage(ITextComponent.Serializer.jsonToComponent(txt));
+                }
+                catch (JsonParseException jsonparseexception)
+                {
+                    event.player.addChatMessage(new TextComponentString(txt));
+                }
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        if (lilypad) lilypad(event.player);
+        if (D3Core.isAprilFools()) CoreConstants.spawnRandomFireworks(event.player, 1 + CoreConstants.RANDOM.nextInt(5), 1 + CoreConstants.RANDOM.nextInt(5));
+    }
+
+    @SubscribeEvent
+    public void playerRespawnEvent(net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent event)
+    {
+        if (lilypad) lilypad(event.player);
+        if (D3Core.isAprilFools()) CoreConstants.spawnRandomFireworks(event.player, 1 + CoreConstants.RANDOM.nextInt(5), 1 + CoreConstants.RANDOM.nextInt(5));
+    }
+
+    private void lilypad(EntityPlayer player)
+    {
+        World world = player.worldObj;
+
+        BlockPos blockPos = new BlockPos((int)(player.posX),(int)(player.posY),(int)(player.posZ));
+
+        if (blockPos.getX() < 0) blockPos.add(-1,0,0);
+        if (blockPos.getZ() < 0) blockPos.add(0,0,-1);
+
+        int limiter = world.getActualHeight() * 2;
+
+        while (world.getBlockState(blockPos).getMaterial() == Material.WATER && --limiter != 0) blockPos.add(0,1,0);
+        while (world.getBlockState(blockPos).getMaterial() == Material.AIR && --limiter != 0) blockPos.add(0,-1,0);
+        if (limiter == 0) return;
+        if (world.getBlockState(blockPos).getMaterial() == Material.WATER)
+        {
+            world.setBlockState(blockPos.add(0,1,0), Blocks.WATERLILY.getDefaultState());
+            player.setPositionAndUpdate(blockPos.getX() + 0.5,blockPos.getY() + 2,blockPos.getZ() + 0.5);
         }
     }
 }

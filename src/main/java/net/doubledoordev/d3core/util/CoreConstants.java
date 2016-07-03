@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014,
+ * Copyright (c) 2014-2016, Dries007 & DoubleDoorDevelopment
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -12,7 +12,7 @@
  *   this list of conditions and the following disclaimer in the documentation
  *   and/or other materials provided with the distribution.
  *
- *  Neither the name of the {organization} nor the names of its
+ *  Neither the name of DoubleDoorDevelopment nor the names of its
  *   contributors may be used to endorse or promote products derived from
  *   this software without specific prior written permission.
  *
@@ -27,60 +27,52 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- *
  */
 
 package net.doubledoordev.d3core.util;
 
-import com.google.common.base.Joiner;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.doubledoordev.d3core.D3Core;
-import net.doubledoordev.d3core.permissions.Node;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityFireworkRocket;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 
-import java.util.Calendar;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 /**
  * @author Dries007
  */
+@SuppressWarnings("WeakerAccess")
 public class CoreConstants
 {
-    public static final String MODID            = "D3Core";
-    public static final String NAME             = "D³ Core";
-    public static final String BASEURL          = "http://doubledoordev.net/";
-    public static final String PERKSURL         = BASEURL + "perks.json";
-    public static final String MAVENURL         = BASEURL + "maven/";
-    /**
-     * @see net.doubledoordev.d3core.client.ModConfigGuiFactory
-     */
+    public static final String MODID = "D3Core";
+    public static final String NAME = "D³ Core";
+    public static final String BASE_URL = "http://doubledoordev.net/";
+    public static final String PERKS_URL = BASE_URL + "perks.json";
+    public static final String UPDATE_URL = BASE_URL + MODID + ".json";
+
+    /** @see net.doubledoordev.d3core.client.ModConfigGuiFactory */
     public static final String MOD_GUI_FACTORY = "net.doubledoordev.d3core.client.ModConfigGuiFactory";
-    public static final Gson   GSON = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(Node.class, new Node.JsonHelper()).create();
-    public static final Joiner JOINER_DOT = Joiner.on('.');
+
+    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     public static final Random RANDOM = new Random();
+    public static final String LOGIN_MESSAGE_FILE = "loginmessage.txt";
+    public static final Pattern PATTERN_ITEMSTACK = Pattern.compile("^(?:(?<mod>.*):)?(?<name>.*?) ?(?<meta>\\*|\\d+)? ?(?<stacksize>\\d+)?$");
 
-    public static boolean isAprilFools()
+    public static void spawnRandomFireworks(Entity target, int rad, int rockets)
     {
-        //noinspection MagicConstant
-        return D3Core.aprilFools && Calendar.getInstance().get(Calendar.MONTH) == Calendar.APRIL && Calendar.getInstance().get(Calendar.DAY_OF_MONTH) == 1;
-    }
-
-    public static void spawnRandomFireworks(EntityPlayer target, int rad, int rockets)
-    {
-        while (rockets -- > 0)
+        while (rockets-- > 0)
         {
             ItemStack itemStack = new ItemStack(Items.FIREWORKS);
             NBTTagCompound fireworks = new NBTTagCompound();
             NBTTagList explosions = new NBTTagList();
 
             int charges = 1 + CoreConstants.RANDOM.nextInt(3);
-            while (charges -- > 0)
+            while (charges-- > 0)
             {
                 NBTTagCompound explosion = new NBTTagCompound();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, DoubleDoorDevelopment
+ * Copyright (c) 2014-2016, Dries007 & DoubleDoorDevelopment
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -12,7 +12,7 @@
  *   this list of conditions and the following disclaimer in the documentation
  *   and/or other materials provided with the distribution.
  *
- *  Neither the name of the project nor the names of its
+ *  Neither the name of DoubleDoorDevelopment nor the names of its
  *   contributors may be used to endorse or promote products derived from
  *   this software without specific prior written permission.
  *
@@ -26,6 +26,7 @@
  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
  */
 
 package net.doubledoordev.d3core.util;
@@ -33,25 +34,26 @@ package net.doubledoordev.d3core.util;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.GameData;
 import net.doubledoordev.d3core.D3Core;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.AchievementEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-
 import org.apache.commons.io.IOUtils;
 
 import java.net.URL;
 import java.nio.charset.Charset;
+
+import static net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 
 /**
  * Something other than capes for once
@@ -60,25 +62,33 @@ import java.nio.charset.Charset;
  */
 public class DevPerks
 {
-    private JsonObject  perks = new JsonObject();
+    private JsonObject perks = new JsonObject();
 
     public DevPerks()
     {
+        update();
+    }
+
+    private void update()
+    {
         try
         {
-            perks = new JsonParser().parse(IOUtils.toString(new URL(CoreConstants.PERKSURL), Charset.forName("UTF-8"))).getAsJsonObject();
+            perks = new JsonParser().parse(IOUtils.toString(new URL(CoreConstants.PERKS_URL), Charset.forName("UTF-8"))).getAsJsonObject();
         }
         catch (Exception e)
         {
-            if (D3Core.debug()) e.printStackTrace();
+            D3Core.getLogger().warn("There may be an error in devperks, no sillyness for you...", e);
+            if (D3Core.isDebug()) e.printStackTrace();
         }
+        if (perks == null) perks = new JsonObject();
     }
 
-    public static ItemStack getItemStackFromJson(JsonObject data, int defaultMeta, int defaultStacksize)
+    private static ItemStack getItemStackFromJson(JsonObject data, int defaultMeta, int defaultStacksize)
     {
         int meta = data.has("meta") ? data.get("meta").getAsInt() : defaultMeta;
         int size = data.has("size") ? data.get("size").getAsInt() : defaultStacksize;
-        ItemStack stack = GameRegistry.makeItemStack(data.get("name").getAsString(), size, meta,null);
+        ItemStack stack = GameRegistry.makeItemStack(data.get("name").getAsString(), size, meta, null);
+        if (stack == null) return null;
         if (data.has("display")) stack.setStackDisplayName(data.get("display").getAsString());
         if (data.has("color"))
         {
@@ -95,7 +105,8 @@ public class DevPerks
             if (root == null) root = new NBTTagCompound();
             NBTTagCompound display = root.getCompoundTag("display");
             NBTTagList lore = new NBTTagList();
-            for (JsonElement element : data.getAsJsonArray("lore")) lore.appendTag(new NBTTagString(element.getAsString()));
+            for (JsonElement element : data.getAsJsonArray("lore"))
+                lore.appendTag(new NBTTagString(element.getAsString()));
             display.setTag("Lore", lore);
             root.setTag("display", display);
             stack.setTagCompound(root);
@@ -103,30 +114,78 @@ public class DevPerks
         return stack;
     }
 
-    /**
-     * Something other than capes for once
-     */
     @SubscribeEvent
     public void nameFormatEvent(PlayerEvent.NameFormat event)
     {
         try
         {
-            if (D3Core.debug()) perks = new JsonParser().parse(IOUtils.toString(new URL(CoreConstants.PERKSURL), Charset.forName("UTF-8"))).getAsJsonObject();
+            if (D3Core.isDebug()) update();
             if (perks.has(event.getUsername()))
             {
                 JsonObject perk = perks.getAsJsonObject(event.getUsername());
                 if (perk.has("displayname")) event.setDisplayname(perk.get("displayname").getAsString());
-                if (perk.has("hat") && (event.getEntityPlayer().inventory.armorInventory[3] == null || event.getEntityPlayer().inventory.armorInventory[3].stackSize == 0))
+                doHat(perk, event.getEntityPlayer());
+            }
+        }
+        catch (Exception e)
+        {
+            if (D3Core.isDebug()) e.printStackTrace();
+        }
+    }
+
+    @SubscribeEvent
+    public void playerLoggedInEvent(PlayerLoggedInEvent event)
+    {
+        try
+        {
+            if (D3Core.isDebug()) update();
+            if (perks.has(event.player.getName()))
+            {
+                JsonObject perk = perks.getAsJsonObject(event.player.getName());
+                if (perk.has("fireworks"))
                 {
-                    ItemStack hat = getItemStackFromJson(perk.getAsJsonObject("hat"), 0, 0);
-                    hat.stackSize = 0;
-                    event.getEntityPlayer().inventory.armorInventory[3] = hat;
+                    JsonObject fw = perk.getAsJsonObject("fireworks");
+                    if (fw.has("login"))
+                    {
+                        JsonObject obj = fw.getAsJsonObject("login");
+                        int rad = obj.has("radius") ? obj.get("radius").getAsInt() : 5;
+                        int rockets = obj.has("rockets") ? obj.get("rockets").getAsInt() : 5;
+                        CoreConstants.spawnRandomFireworks(event.player, rad + CoreConstants.RANDOM.nextInt(rad), rockets + CoreConstants.RANDOM.nextInt(rockets));
+                    }
                 }
             }
         }
         catch (Exception e)
         {
-            if (D3Core.debug()) e.printStackTrace();
+            if (D3Core.isDebug()) e.printStackTrace();
+        }
+    }
+
+    @SubscribeEvent
+    public void achievementEvent(AchievementEvent event)
+    {
+        try
+        {
+            if (D3Core.isDebug()) update();
+            if (perks.has(event.getEntityPlayer().getName()))
+            {
+                JsonObject perk = perks.getAsJsonObject(event.getEntityPlayer().getName());
+                if (perk.has("fireworks"))
+                {
+                    JsonObject fw = perk.getAsJsonObject("fireworks");
+                    if (fw.has("achievement"))
+                    {
+                        JsonObject obj = fw.getAsJsonObject("achievement");
+                        int rad = obj.has("radius") ? obj.get("radius").getAsInt() : 5;
+                        int rockets = obj.has("rockets") ? obj.get("rockets").getAsInt() : 5;
+                        CoreConstants.spawnRandomFireworks(event.getEntityPlayer(), rad + CoreConstants.RANDOM.nextInt(rad), rockets + CoreConstants.RANDOM.nextInt(rockets));
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            if (D3Core.isDebug()) e.printStackTrace();
         }
     }
 
@@ -135,21 +194,27 @@ public class DevPerks
     {
         try
         {
-            if (D3Core.debug()) perks = new JsonParser().parse(IOUtils.toString(new URL(CoreConstants.PERKSURL), Charset.forName("UTF-8"))).getAsJsonObject();
-            if (perks.has(event.getOriginal().getCommandSenderEntity().getName()))
+            if (D3Core.isDebug()) update();
+            if (perks.has(event.getOriginal().getName()))
             {
-                JsonObject perk = perks.getAsJsonObject(event.getOriginal().getCommandSenderEntity().getName());
-                if (perk.has("hat") && (event.getEntityPlayer().inventory.armorInventory[3] == null || event.getEntityPlayer().inventory.armorInventory[3].stackSize == 0))
-                {
-                    ItemStack hat = getItemStackFromJson(perk.getAsJsonObject("hat"), 0, 0);
-                    hat.stackSize = 0;
-                    event.getEntityPlayer().inventory.armorInventory[3] = hat;
-                }
+                JsonObject perk = perks.getAsJsonObject(event.getOriginal().getName());
+                doHat(perk, event.getEntityPlayer());
             }
         }
         catch (Exception e)
         {
-            if (D3Core.debug()) e.printStackTrace();
+            if (D3Core.isDebug()) e.printStackTrace();
+        }
+    }
+
+    private void doHat(JsonObject perk, EntityPlayer player)
+    {
+        if (perk.has("hat") && (player.inventory.armorInventory[3] == null || player.inventory.armorInventory[3].stackSize == 0))
+        {
+            ItemStack hat = getItemStackFromJson(perk.getAsJsonObject("hat"), 0, 0);
+            if (hat == null) return;
+            hat.stackSize = 0;
+            player.inventory.armorInventory[3] = hat;
         }
     }
 
@@ -158,41 +223,35 @@ public class DevPerks
     {
         try
         {
-            if (D3Core.debug()) perks = new JsonParser().parse(IOUtils.toString(new URL(CoreConstants.PERKSURL), Charset.forName("UTF-8"))).getAsJsonObject();
-            if (perks.has(event.getEntityPlayer().getCommandSenderEntity().getName()))
+            if (D3Core.isDebug())
+                perks = new JsonParser().parse(IOUtils.toString(new URL(CoreConstants.PERKS_URL), Charset.forName("UTF-8"))).getAsJsonObject();
+            if (perks.has(event.getEntityPlayer().getName()))
             {
-                JsonObject perk = perks.getAsJsonObject(event.getEntityPlayer().getCommandSenderEntity().getName());
+                JsonObject perk = perks.getAsJsonObject(event.getEntityPlayer().getName());
                 if (perk.has("drop"))
                 {
-                    event.getDrops().add(new EntityItem(event.getEntityPlayer().getEntityWorld(), event.getEntityPlayer().posX, event.getEntityPlayer().posY, event.getEntityPlayer().posZ, getItemStackFromJson(perk.getAsJsonObject("drop"), 0, 1)));
+                    ItemStack stack = getItemStackFromJson(perk.getAsJsonObject("drop"), 0, 1);
+                    if (stack == null) return;
+                    event.getDrops().add(new EntityItem(event.getEntityPlayer().getEntityWorld(), event.getEntityPlayer().posX, event.getEntityPlayer().posY, event.getEntityPlayer().posZ, stack));
                 }
             }
         }
         catch (Exception e)
         {
-            if (D3Core.debug()) e.printStackTrace();
+            if (D3Core.isDebug()) e.printStackTrace();
         }
     }
 
-    public void update(boolean sillyness)
+    public void update(boolean silliness)
     {
         try
         {
-            if (sillyness) MinecraftForge.EVENT_BUS.register(this);
+            if (silliness) MinecraftForge.EVENT_BUS.register(this);
             else MinecraftForge.EVENT_BUS.unregister(this);
         }
         catch (Exception e)
         {
-            if (D3Core.debug()) e.printStackTrace();
-        }
-        try
-        {
-            if (sillyness) FMLCommonHandler.instance().bus().register(this);
-            else FMLCommonHandler.instance().bus().unregister(this);
-        }
-        catch (Exception e)
-        {
-            if (D3Core.debug()) e.printStackTrace();
+            if (D3Core.isDebug()) e.printStackTrace();
         }
     }
 }

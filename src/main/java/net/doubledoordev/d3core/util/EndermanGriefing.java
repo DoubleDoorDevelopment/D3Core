@@ -1,14 +1,45 @@
+/*
+ * Copyright (c) 2014-2016, Dries007 & DoubleDoorDevelopment
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *  Redistributions of source code must retain the above copyright notice, this
+ *   list of conditions and the following disclaimer.
+ *
+ *  Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ *  Neither the name of DoubleDoorDevelopment nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
 package net.doubledoordev.d3core.util;
 
-import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
-import net.minecraftforge.fml.common.registry.GameData;
 import net.doubledoordev.d3core.D3Core;
 import net.minecraft.block.Block;
 import net.minecraft.entity.monster.EntityEnderman;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.RegistryNamespacedDefaultedByKey;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -27,10 +58,10 @@ public class EndermanGriefing
     {
         if (disable)
         {
-            FMLControlledNamespacedRegistry<Block> blockData = GameData.getBlockRegistry();
+            RegistryNamespacedDefaultedByKey<ResourceLocation, Block> blockData = Block.REGISTRY;
             for (ResourceLocation key : blockData.getKeys())
             {
-                Block block = (Block) blockData.getObject(key);
+                Block block = blockData.getObject(key);
                 reverseMap.put(blockData.getNameForObject(block).toString(), EntityEnderman.getCarriable(block));
                 EntityEnderman.setCarriable(block, false);
             }
@@ -40,7 +71,7 @@ public class EndermanGriefing
             int added = 0, removed = 0;
             for (String item : addList)
             {
-                List<Block> blocks = matchBlock(item);
+                Set<Block> blocks = matchBlock(item);
                 if (blocks.isEmpty())  D3Core.getLogger().warn("[EndermanGriefing] '{}' does not match any block...", item);
                 else
                 {
@@ -54,7 +85,7 @@ public class EndermanGriefing
             }
             for (String item : blacklist)
             {
-                List<Block> blocks = matchBlock(item);
+                Set<Block> blocks = matchBlock(item);
                 if (blocks.isEmpty()) D3Core.getLogger().warn("[EndermanGriefing] '{}' does not match any block...", item);
                 else
                 {
@@ -66,25 +97,22 @@ public class EndermanGriefing
                     }
                 }
             }
-            D3Core.getLogger().info("[EndermanGriefing] Added {} and removed {} blocks to the Ederman grab list...", added, removed);
+            D3Core.getLogger().info("[EndermanGriefing] Added {} and removed {} blocks to the Enderman grab list...", added, removed);
         }
     }
 
-    private static List<Block> matchBlock(String item)
+    private static Set<Block> matchBlock(String item)
     {
-        boolean ignored = false;
-        ArrayList<Block> blocks = new ArrayList<>();
+        Set<Block> blocks = new HashSet<>();
         Pattern pattern = Pattern.compile(item.replace("*", ".*?"));
-        FMLControlledNamespacedRegistry<Block> blockData = GameData.getBlockRegistry();
-        for (Block block : blockData.typeSafeIterable())
+        RegistryNamespacedDefaultedByKey<ResourceLocation, Block> blockData = Block.REGISTRY;
+        for (Block block : blockData)
         {
             if (pattern.matcher(blockData.getNameForObject(block).toString()).matches())
             {
-                if (blockData.getId(block) > 255) ignored = true;
-                else blocks.add(block);
+                blocks.add(block);
             }
         }
-        if (ignored) D3Core.getLogger().warn("[EndermanGriefing] Blocks with ID > 255 won't work! Some blocks matching {} have been ignored.", item);
         return blocks;
     }
 
@@ -92,7 +120,7 @@ public class EndermanGriefing
     {
         for (String entry : reverseMap.keySet())
         {
-            EntityEnderman.setCarriable(GameData.getBlockRegistry().getObject(new ResourceLocation(entry)), reverseMap.get(entry));
+            EntityEnderman.setCarriable(Block.REGISTRY.getObject(new ResourceLocation(entry)), reverseMap.get(entry));
         }
     }
 }

@@ -9,11 +9,11 @@ d3.core.config.debug.tooltip=Please enable before making a bug report.
 d3.core.config.printDeathCoords=Print your death coordinates in chat (client side)
 d3.core.config.printDeathCoords.tooltip=Contains a clickable TP command thing too!
 
-d3.core.config.sillyness=Enable sillyness
-d3.core.config.sillyness.tooltip=Please don't disable, unless you want to piss off the D³ crew :p But seriously, you can disable name changes, drops and block helmets with this setting.
+d3.core.config.Silliness=Enable silliness
+d3.core.config.Silliness.tooltip=Please don't disable, unless you want to piss off the D³ crew :p But seriously, you can disable name changes, drops and block helmets with this setting.
 
-d3.core.config.updateWarning=Update warnings
-d3.core.config.updateWarning.tooltip=Please don't disable, unless you are on a modpack.
+d3.core.config.achievementFireworks=Achievement is Fireworks!
+d3.core.config.achievementFireworks.tooltip=I made this just to annoy Clay & James. Have fun with it!
 
 d3.core.config.tooltips=Tooltips
 d3.core.config.tooltips.tooltip=Item hover options, toggle with F3 + H

@@ -9,8 +9,8 @@ d3.core.config.debug.tooltip=请在错误报告生成前开启.
 d3.core.config.printDeathCoords=显示死亡坐标在聊天窗口(客户端)
 d3.core.config.printDeathCoords.tooltip=同时也包含可点击的传送指令!
 
-d3.core.config.sillyness=开启意义不明项
-d3.core.config.sillyness.tooltip=请勿禁用此项,除非你讨厌D³团队:p 但严肃地说,你可以用该设定禁用名称变更,掉落以及方块保护等.
+d3.core.config.silliness=开启意义不明项
+d3.core.config.silliness.tooltip=请勿禁用此项,除非你讨厌D³团队:p 但严肃地说,你可以用该设定禁用名称变更,掉落以及方块保护等.
 
 d3.core.config.updateWarning=更新警告
 d3.core.config.updateWarning.tooltip=请勿禁用,除非你使用的整合包.

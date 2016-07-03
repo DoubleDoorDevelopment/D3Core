@@ -1,1 +1,0 @@
-This folder contains files for a correct dependent mod setup.
