@@ -10,6 +10,7 @@ buildscript {
             url = "https://oss.sonatype.org/content/repositories/snapshots/"
         }
     }
+    //noinspection GroovyAssignabilityCheck
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
         classpath group: 'com.github.rodionmoiseev.gradle.plugins', name: 'idea-utils', version: '0.2'
@@ -18,6 +19,7 @@ buildscript {
 
 import groovy.json.*
 
+//noinspection GroovyAssignabilityCheck
 configurations {
     compile
     deployJars
@@ -27,65 +29,76 @@ apply plugin: "net.minecraftforge.gradle.forge"
 apply plugin: "idea-utils"
 
 group = "net.doubledoordev.d3core"
-version = "1.1.2"
+version = "1.2.0"
 
 targetCompatibility = 1.7
 sourceCompatibility = 1.7
 
 archivesBaseName = 'D3Core'
 def githuborg = 'DoubleDoorDevelopment'
-def description = 'DoubleDoor Development Core'
+def description = 'DoubleDoorDevelopment Core'
 minecraft {
-    version = "1.9.4-12.17.0.1909-1.9.4"
+    version = "1.9.4-12.17.0.1976"
     runDir = "jars"
-    mappings = "snapshot_20160518"    
+    mappings = "stable_26"
 }
 
 if (System.getenv().BUILD_NUMBER != null) version += "." + System.getenv().BUILD_NUMBER
-def builder = new groovy.json.JsonBuilder()
-builder (version: version, mcversion: project.minecraft.version, apiversion: project.minecraft.mcpVersion)
-new File("versions.json").write(builder.toPrettyString())
 
+//noinspection GroovyAssignabilityCheck
 processResources {
     from(sourceSets.main.resources.srcDirs) {
         expand 'version':project.version, 'mcversion':project.minecraft.version, 'modid':project.archivesBaseName, 'githuborg':githuborg, 'description':description, 'group':project.group, 'artifactId':project.archivesBaseName
     }
+
+    doLast {
+        def updateFile = new File(project.archivesBaseName + '.json')
+        def json;
+        if (updateFile.exists()) {
+            json = new JsonSlurper().parseText(updateFile.getText())
+        }
+        else {
+            def builder = new JsonBuilder()
+            json = builder(
+                homepage: "http://doubledoordev.net/",
+                promos: new HashMap<>()
+            )
+        }
+        def outStream = new ByteArrayOutputStream()
+        def result = exec {
+            executable = 'git'
+            args = [ 'log', '-n', '1', "--format='%B'"]
+            standardOutput = outStream
+        }
+        def fullLog = outStream.toString().replaceAll("^\\s*'\\s*|\\s*'\\s*\$", "").replaceAll("[\\r\\n]+", "\n")
+
+        json['promos'][project.minecraft.version + '-latest'] = project.version
+        json['promos'][project.minecraft.version + '-recomended'] = project.version
+        if (!json.containsKey(project.minecraft.version)) json.put(project.minecraft.version, new HashMap<>())
+        def version = json[project.minecraft.version]
+        version.put(project.version, fullLog)
+        updateFile.write JsonOutput.prettyPrint(JsonOutput.toJson(json))
+    }
 }
 
-task sourcesJar(type: Jar) {
-    from "LICENSE.txt"
-    from sourceSets.main.allSource
-    classifier = 'src'
+task deobfJar(type: Jar, dependsOn: 'jar') {
+    from "build/source/main"
+    classifier "dev"
     appendix = project.minecraft.version
-    manifest {
-        attributes 'FMLAT': 'D3Core_at.cfg'
-    }
 }
-
-task deobfJar(type: Jar) {
+sourceJar {
     from "LICENSE.txt"
-    from sourceSets.main.output
-    from (sourceSets.main.allSource.srcDirs) {
-        include '**/*.java'
-    }
-	classifier = 'dev'
+    exclude("com/**")
+    classifier "src"
     appendix = project.minecraft.version
-    manifest {
-        attributes 'FMLAT': 'D3Core_at.cfg'
-    }
 }
-
+//noinspection GroovyAssignabilityCheck
 jar {
     from "LICENSE.txt"
+    exclude("com/**")
     appendix = project.minecraft.version
-    manifest {
-        attributes 'FMLAT': 'D3Core_at.cfg'
-    }
 }
-
 artifacts {
-	archives jar
-    archives sourcesJar
     archives deobfJar
 }
 
@@ -98,6 +111,7 @@ idea {
     }
 }
 
+//noinspection GroovyAssignabilityCheck
 uploadArchives {
     if (project.hasProperty("dddUser") && project.hasProperty("dddUrl") && project.hasProperty("dddPass")) {
         repositories {
@@ -112,7 +126,7 @@ uploadArchives {
                     project {
                         name project.archivesBaseName
                         packaging 'jar'
-                        description = description
+                        description = project.description
                         url 'https://github.com/' + githuborg + '/' + project.archivesBaseName
 
                         scm {
