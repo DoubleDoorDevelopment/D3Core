@@ -32,15 +32,15 @@
 package net.doubledoordev.d3core.client;
 
 import net.doubledoordev.d3core.D3Core;
+import net.doubledoordev.d3core.util.CoreConstants;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.resources.I18n;
 import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.IModGuiFactory;
 import net.minecraftforge.fml.client.config.GuiConfig;
 import net.minecraftforge.fml.client.config.IConfigElement;
-import net.doubledoordev.d3core.util.CoreConstants;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.resources.I18n;
 
 import java.util.ArrayList;
 import java.util.List;

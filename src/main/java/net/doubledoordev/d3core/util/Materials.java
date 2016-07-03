@@ -32,11 +32,11 @@
 package net.doubledoordev.d3core.util;
 
 import com.google.common.base.Strings;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.doubledoordev.d3core.D3Core;
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.ToolMaterial;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
 import org.apache.commons.io.FileUtils;
 

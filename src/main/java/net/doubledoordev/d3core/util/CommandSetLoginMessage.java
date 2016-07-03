@@ -40,7 +40,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
-
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;

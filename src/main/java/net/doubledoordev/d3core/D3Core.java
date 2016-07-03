@@ -31,6 +31,7 @@
 
 package net.doubledoordev.d3core;
 
+import net.doubledoordev.d3core.client.LanguageHelper;
 import net.doubledoordev.d3core.util.*;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.common.MinecraftForge;
@@ -121,6 +122,7 @@ public class D3Core
     {
         EndermanGriefing.init();
         pastPost = true;
+        if (event.getSide().isClient()) LanguageHelper.run();
     }
 
     @Mod.EventHandler
