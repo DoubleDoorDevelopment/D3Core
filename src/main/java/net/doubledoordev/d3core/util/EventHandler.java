@@ -41,6 +41,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.stats.StatisticsManagerServer;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -105,7 +106,13 @@ public class EventHandler
     @SubscribeEvent
     public void achievementEvent(AchievementEvent event)
     {
-        if (achievementFireworks) CoreConstants.spawnRandomFireworks(event.getEntityPlayer(), 1, 1);
+        EntityPlayer player = event.getEntityPlayer();
+        if (achievementFireworks && FMLCommonHandler.instance().getEffectiveSide().isServer() && player.getServer() != null)
+        {
+            StatisticsManagerServer sms = player.getServer().getPlayerList().getPlayerStatsFile(player);
+            if (sms.canUnlockAchievement(event.getAchievement()) && !sms.hasAchievementUnlocked(event.getAchievement()))
+                CoreConstants.spawnRandomFireworks(player, 1, 1);
+        }
     }
 
     @SubscribeEvent()
