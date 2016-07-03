@@ -32,11 +32,17 @@
 
 package net.doubledoordev.d3core.permissions.cmd;
 
+import javax.annotation.Nullable;
+
+import net.doubledoordev.d3core.D3Core;
 import net.doubledoordev.d3core.permissions.PermissionsDB;
 import net.minecraft.command.CommandBase;
+import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
 
@@ -77,22 +83,29 @@ public class CommandPermissionWrapper extends CommandPermissionBase
     }
 
     @Override
-    public void processCommand(ICommandSender p_71515_1_, String[] p_71515_2_)
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args)
     {
-        commandBase.processCommand(p_71515_1_, p_71515_2_);
+        try {
+            commandBase.execute(server, sender, args);
+        }
+        catch (CommandException e)
+        {
+            D3Core.getLogger().error(e);
+        }
     }
 
     @Override
-    public boolean canCommandSenderUseCommand(ICommandSender sender)
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender)
     {
         if (sender instanceof EntityPlayer) return PermissionsDB.INSTANCE.checkPermissions(sender, getBasePermission());
-        else return commandBase.canCommandSenderUseCommand(sender);
+        else return commandBase.checkPermission(server,sender);
     }
 
     @Override
-    public List addTabCompletionOptions(ICommandSender p_71516_1_, String[] p_71516_2_)
+    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
     {
-        return commandBase.addTabCompletionOptions(p_71516_1_, p_71516_2_);
+        return commandBase.getTabCompletionOptions(server,sender,args,null);
+
     }
 
     @Override
@@ -103,12 +116,6 @@ public class CommandPermissionWrapper extends CommandPermissionBase
 
     @Override
     public int compareTo(ICommand p_compareTo_1_)
-    {
-        return commandBase.compareTo(p_compareTo_1_);
-    }
-
-    @Override
-    public int compareTo(Object p_compareTo_1_)
     {
         return commandBase.compareTo(p_compareTo_1_);
     }

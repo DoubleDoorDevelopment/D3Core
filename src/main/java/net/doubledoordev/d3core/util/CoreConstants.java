@@ -75,7 +75,7 @@ public class CoreConstants
     {
         while (rockets -- > 0)
         {
-            ItemStack itemStack = new ItemStack(Items.fireworks);
+            ItemStack itemStack = new ItemStack(Items.FIREWORKS);
             NBTTagCompound fireworks = new NBTTagCompound();
             NBTTagList explosions = new NBTTagList();
 

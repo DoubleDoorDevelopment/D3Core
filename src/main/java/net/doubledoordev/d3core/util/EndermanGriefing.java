@@ -1,11 +1,12 @@
 package net.doubledoordev.d3core.util;
 
-import cpw.mods.fml.common.registry.FMLControlledNamespacedRegistry;
-import cpw.mods.fml.common.registry.GameData;
+import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
+import net.minecraftforge.fml.common.registry.GameData;
 import net.doubledoordev.d3core.D3Core;
 import net.minecraft.block.Block;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.ResourceLocation;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -27,10 +28,10 @@ public class EndermanGriefing
         if (disable)
         {
             FMLControlledNamespacedRegistry<Block> blockData = GameData.getBlockRegistry();
-            for (Object key : blockData.getKeys())
+            for (ResourceLocation key : blockData.getKeys())
             {
                 Block block = (Block) blockData.getObject(key);
-                reverseMap.put(blockData.getNameForObject(block), EntityEnderman.getCarriable(block));
+                reverseMap.put(blockData.getNameForObject(block).toString(), EntityEnderman.getCarriable(block));
                 EntityEnderman.setCarriable(block, false);
             }
         }
@@ -77,7 +78,7 @@ public class EndermanGriefing
         FMLControlledNamespacedRegistry<Block> blockData = GameData.getBlockRegistry();
         for (Block block : blockData.typeSafeIterable())
         {
-            if (pattern.matcher(blockData.getNameForObject(block)).matches())
+            if (pattern.matcher(blockData.getNameForObject(block).toString()).matches())
             {
                 if (blockData.getId(block) > 255) ignored = true;
                 else blocks.add(block);
@@ -91,7 +92,7 @@ public class EndermanGriefing
     {
         for (String entry : reverseMap.keySet())
         {
-            EntityEnderman.setCarriable(GameData.getBlockRegistry().getObject(entry), reverseMap.get(entry));
+            EntityEnderman.setCarriable(GameData.getBlockRegistry().getObject(new ResourceLocation(entry)), reverseMap.get(entry));
         }
     }
 }

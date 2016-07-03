@@ -1,11 +1,18 @@
 package net.doubledoordev.d3core.util.libs.org.mcstats;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.FMLLog;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
+
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+
+import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+
+
 import net.minecraftforge.common.config.Configuration;
 
 import java.io.*;
@@ -293,18 +300,20 @@ public class Metrics
     {
         // Server software specific section
         String pluginName = modname;
-        boolean onlineMode = MinecraftServer.getServer().isServerInOnlineMode();
+        MinecraftServer minecraftServer = FMLCommonHandler.instance().getMinecraftServerInstance();
+        boolean onlineMode = minecraftServer.isServerInOnlineMode();
+
         String pluginVersion = modversion;
         String serverVersion;
-        if (MinecraftServer.getServer().isDedicatedServer())
+        if (minecraftServer.isDedicatedServer())
         {
-            serverVersion = "MinecraftForge (MC: " + MinecraftServer.getServer().getMinecraftVersion() + ")";
+            serverVersion = "MinecraftForge (MC: " + minecraftServer.getMinecraftVersion() + ")";
         }
         else
         {
-            serverVersion = "MinecraftForgeSSP (MC: " + MinecraftServer.getServer().getMinecraftVersion() + ")";
+            serverVersion = "MinecraftForgeSSP (MC: " + minecraftServer.getMinecraftVersion() + ")";
         }
-        int playersOnline = MinecraftServer.getServer().getCurrentPlayerCount();
+        int playersOnline = minecraftServer.getCurrentPlayerCount();
 
         // END server software specific section -- all code below does not use any code outside of this class / Java
 

@@ -32,22 +32,23 @@
 
 package net.doubledoordev.d3core;
 
-import cpw.mods.fml.client.config.IConfigElement;
-import cpw.mods.fml.client.event.ConfigChangedEvent;
-import cpw.mods.fml.common.*;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent;
-import cpw.mods.fml.common.registry.LanguageRegistry;
-import cpw.mods.fml.common.versioning.ArtifactVersion;
-import cpw.mods.fml.common.versioning.DefaultArtifactVersion;
+import net.minecraftforge.fml.client.config.IConfigElement;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.common.*;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.translation.I18n;
+import net.minecraftforge.fml.common.versioning.ArtifactVersion;
+import net.minecraftforge.fml.common.versioning.DefaultArtifactVersion;
 import net.doubledoordev.d3core.permissions.PermissionsDB;
 import net.doubledoordev.d3core.util.*;
 import net.doubledoordev.d3core.util.libs.org.mcstats.Metrics;
-import net.minecraft.util.IChatComponent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.common.config.Configuration;
@@ -250,12 +251,12 @@ public class D3Core implements ID3Mod
     {
         if (!updateWarning || updateDateList.isEmpty()) return;
 
-        event.player.addChatComponentMessage(IChatComponent.Serializer.func_150699_a("{\"text\":\"\",\"extra\":[{\"text\":\"Updates available for these mods:\",\"color\":\"gold\"}]}"));
+        event.player.addChatComponentMessage(ITextComponent.Serializer.jsonToComponent("{\"text\":\"\",\"extra\":[{\"text\":\"Updates available for these mods:\",\"color\":\"gold\"}]}"));
         for (CoreHelper.ModUpdateDate updateDate : updateDateList)
         {
-            event.player.addChatComponentMessage(IChatComponent.Serializer.func_150699_a(String.format("{\"text\":\"\",\"extra\":[{\"text\":\"%s: %s -> %s\"}]}", updateDate.getName(), updateDate.getCurrentVersion(), updateDate.getLatestVersion())));
+            event.player.addChatComponentMessage(ITextComponent.Serializer.jsonToComponent(String.format("{\"text\":\"\",\"extra\":[{\"text\":\"%s: %s -> %s\"}]}", updateDate.getName(), updateDate.getCurrentVersion(), updateDate.getLatestVersion())));
         }
-        event.player.addChatComponentMessage(IChatComponent.Serializer.func_150699_a("{\"text\":\"\",\"extra\":[{\"text\":\"Download here!\",\"color\":\"gold\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"http://doubledoordev.net\"}},{\"text\":\" <- That is a link btw :p\"}]}"));
+        event.player.addChatComponentMessage(ITextComponent.Serializer.jsonToComponent("{\"text\":\"\",\"extra\":[{\"text\":\"Download here!\",\"color\":\"gold\",\"clickEvent\":{\"action\":\"open_url\",\"value\":\"http://doubledoordev.net\"}},{\"text\":\" <- That is a link btw :p\"}]}"));
     }
 
     @SubscribeEvent
@@ -273,7 +274,7 @@ public class D3Core implements ID3Mod
     @Override
     public void syncConfig()
     {
-        configuration.setCategoryLanguageKey(MODID, "d3.core.config.core").setCategoryComment(MODID, LanguageRegistry.instance().getStringLocalization("d3.core.config.core"));
+        configuration.setCategoryLanguageKey(MODID, "d3.core.config.core").setCategoryComment(MODID, I18n.translateToLocal("d3.core.config.core"));
 
         debug = configuration.getBoolean("debug", MODID, debug, "Enable debug mode", "d3.core.config.debug");
         sillyness = configuration.getBoolean("sillyness", MODID, sillyness, "Enable sillyness\nBut seriously, you can disable name changes, drops and block helmets with this setting.", "d3.core.config.sillyness");
@@ -288,7 +289,7 @@ public class D3Core implements ID3Mod
         getDevPerks().update(sillyness);
 
         final String catTooltips = MODID + ".tooltips";
-        configuration.setCategoryLanguageKey(catTooltips, "d3.core.config.tooltips").addCustomCategoryComment(catTooltips, LanguageRegistry.instance().getStringLocalization("d3.core.config.tooltips"));
+        configuration.setCategoryLanguageKey(catTooltips, "d3.core.config.tooltips").addCustomCategoryComment(catTooltips, I18n.translateToLocal("d3.core.config.tooltips"));
 
         FORGE_EVENT_HANDLER.enableStringID = configuration.getBoolean("enableStringID", catTooltips, true, "Example: minecraft:gold_ore", "d3.core.config.tooltips.enableStringID");
         FORGE_EVENT_HANDLER.enableUnlocalizedName = configuration.getBoolean("enableUnlocalizedName", catTooltips, true, "Example: tile.oreGold", "d3.core.config.tooltips.enableUnlocalizedName");
