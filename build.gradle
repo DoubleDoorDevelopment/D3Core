@@ -83,7 +83,8 @@ processResources {
 }
 
 task deobfJar(type: Jar, dependsOn: 'jar') {
-    from "build/source/main"
+    from sourceSets.main.output
+    from "LICENSE.txt"
     classifier "dev"
     appendix = project.minecraft.version
 }
