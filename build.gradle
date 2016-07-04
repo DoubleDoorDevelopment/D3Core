@@ -87,18 +87,27 @@ task deobfJar(type: Jar, dependsOn: 'jar') {
     from "LICENSE.txt"
     classifier "dev"
     appendix = project.minecraft.version
+    manifest {
+        attributes 'FMLAT': 'D3Core_at.cfg'
+    }
 }
 sourceJar {
     from "LICENSE.txt"
     exclude("com/**")
     classifier "src"
     appendix = project.minecraft.version
+    manifest {
+        attributes 'FMLAT': 'D3Core_at.cfg'
+    }
 }
 //noinspection GroovyAssignabilityCheck
 jar {
     from "LICENSE.txt"
     exclude("com/**")
     appendix = project.minecraft.version
+    manifest {
+        attributes 'FMLAT': 'D3Core_at.cfg'
+    }
 }
 artifacts {
     archives deobfJar
