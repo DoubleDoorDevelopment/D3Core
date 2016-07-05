@@ -139,7 +139,7 @@ public class D3Core
 
     private void updateConfig()
     {
-        configuration.setCategoryLanguageKey(MODID, "d3.core.config.core").setCategoryComment(MODID, I18n.format("d3.core.config.core"));
+        configuration.setCategoryLanguageKey(MODID, "d3.core.config.core").setCategoryComment(MODID, "d3.core.config.core");
 
         debug = configuration.getBoolean("isDebug", MODID, debug, "Enable isDebug mode", "d3.core.config.isDebug");
         silliness = configuration.getBoolean("silliness", MODID, silliness, "Enable silliness\nBut seriously, you can disable name changes, drops and block helmets with this setting.", "d3.core.config.silliness");
@@ -154,7 +154,7 @@ public class D3Core
         getDevPerks().update(silliness);
 
         final String catTooltips = MODID + ".tooltips";
-        configuration.setCategoryLanguageKey(catTooltips, "d3.core.config.tooltips").addCustomCategoryComment(catTooltips, I18n.format("d3.core.config.tooltips"));
+        configuration.setCategoryLanguageKey(catTooltips, "d3.core.config.tooltips").addCustomCategoryComment(catTooltips, "d3.core.config.tooltips");
 
         EventHandler.I.enableStringID = configuration.getBoolean("enableStringID", catTooltips, true, "Example: minecraft:gold_ore", "d3.core.config.tooltips.enableStringID");
         EventHandler.I.enableUnlocalizedName = configuration.getBoolean("enableUnlocalizedName", catTooltips, true, "Example: tile.oreGold", "d3.core.config.tooltips.enableUnlocalizedName");
