@@ -31,8 +31,8 @@
 
 package net.doubledoordev.d3core.client;
 
+import net.doubledoordev.d3core.events.D3LanguageInjectEvent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
@@ -41,6 +41,8 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.translation.LanguageMap;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -56,7 +58,10 @@ import java.util.Map;
 public class LanguageHelper
 {
     private final static LinkedHashMap<String, Integer> ROMAN_NUMERALS = new LinkedHashMap<>();
-    static {
+    public static final LanguageHelper I = new LanguageHelper();
+
+    static
+    {
         ROMAN_NUMERALS.put("M", 1000);
         ROMAN_NUMERALS.put("CM", 900);
         ROMAN_NUMERALS.put("D", 500);
@@ -81,25 +86,9 @@ public class LanguageHelper
             @Override
             public void onResourceManagerReload(IResourceManager resourceManager)
             {
-                Enchantment enchantment = null;
-                //noinspection StatementWithEmptyBody
-                for (int i = 0; enchantment == null; enchantment = Enchantment.REGISTRY.getObjectById(i++));
-                Item item = null;
-                //noinspection StatementWithEmptyBody
-                for (int i = 0; item == null; item = Item.REGISTRY.getObjectById(i++));
-                ItemStack s = new ItemStack(item);
-                s.addEnchantment(enchantment, Integer.MAX_VALUE);
-                final int max = EnchantmentHelper.getEnchantmentLevel(enchantment, s);
-                for (int i = 0; i < max; i++)
-                {
-                    String key = PREFIX + i;
-                    if (!I18n.i18nLocale.properties.containsKey(key))
-                    {
-                        String val = romanNumerals(i);
-                        I18n.i18nLocale.properties.put(key, val);
-                    }
-                }
-                LanguageMap.replaceWith(I18n.i18nLocale.properties);
+                D3LanguageInjectEvent event = new D3LanguageInjectEvent();
+                MinecraftForge.EVENT_BUS.post(event);
+                LanguageMap.replaceWith(event.map);
             }
         });
     }
@@ -119,5 +108,28 @@ public class LanguageHelper
             Int = Int % entry.getValue();
         }
         return builder.toString();
+    }
+
+    @SubscribeEvent
+    public void d3LanguageInjectEvent(D3LanguageInjectEvent event)
+    {
+        Enchantment enchantment = null;
+        //noinspection StatementWithEmptyBody
+        for (int i = 0; enchantment == null; enchantment = Enchantment.REGISTRY.getObjectById(i++));
+        Item item = null;
+        //noinspection StatementWithEmptyBody
+        for (int i = 0; item == null; item = Item.REGISTRY.getObjectById(i++));
+        ItemStack s = new ItemStack(item);
+        s.addEnchantment(enchantment, Integer.MAX_VALUE);
+        final int max = EnchantmentHelper.getEnchantmentLevel(enchantment, s);
+        for (int i = 0; i < max; i++)
+        {
+            String key = PREFIX + i;
+            if (!event.map.containsKey(key))
+            {
+                String val = romanNumerals(i);
+                event.map.put(key, val);
+            }
+        }
     }
 }

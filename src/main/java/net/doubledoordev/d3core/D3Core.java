@@ -33,7 +33,6 @@ package net.doubledoordev.d3core;
 
 import net.doubledoordev.d3core.client.LanguageHelper;
 import net.doubledoordev.d3core.util.*;
-import net.minecraft.client.resources.I18n;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
@@ -86,6 +85,7 @@ public class D3Core
         logger = event.getModLog();
 
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(LanguageHelper.I);
         MinecraftForge.EVENT_BUS.register(EventHandler.I);
         MinecraftForge.EVENT_BUS.register(VOID_REFUNDS);
 
@@ -150,6 +150,7 @@ public class D3Core
         EventHandler.I.nosleep = configuration.getBoolean("nosleep", MODID, EventHandler.I.nosleep, "No sleep at all", "d3.core.config.nosleep");
         EventHandler.I.printDeathCoords = configuration.getBoolean("printDeathCoords", MODID, EventHandler.I.printDeathCoords, "Print your death coordinates in chat (client side)", "d3.core.config.printDeathCoords");
         EventHandler.I.claysTortureMode = configuration.getBoolean("claysTortureMode", MODID, EventHandler.I.claysTortureMode, "Deletes all drops on death.", "d3.core.config.claystorturemode");
+//        EventHandler.I.lagMitigation = configuration.getBoolean("lagMitigation", MODID, EventHandler.I.lagMitigation, "Based on server TPS make not all entities tick every server tick.", "d3.core.config.lagmitigation");
         aprilFools = configuration.getBoolean("aprilFools", MODID, aprilFools, "What would this do...");
         getDevPerks().update(silliness);
 

@@ -77,6 +77,7 @@ import java.io.IOException;
 public class EventHandler
 {
     public static final EventHandler I = new EventHandler();
+//    public boolean lagMitigation;
     public boolean enableStringID;
     public boolean enableUnlocalizedName;
     public boolean enableOreDictionary;
@@ -89,7 +90,49 @@ public class EventHandler
     public boolean lilypad;
     public boolean achievementFireworks;
 
+//    private static int tps = 20;
+
     private EventHandler() {}
+
+//    private static PrintWriter pw;
+//
+//    static
+//    {
+//        try
+//        {
+//            File f = new File("ticktimes.csv");
+//            f.createNewFile();
+//            pw = new PrintWriter(f);
+//        }
+//        catch (IOException e)
+//        {
+//            Throwables.propagate(e);
+//        }
+//    }
+
+//    @SubscribeEvent
+//    public void serverTickHandler(TickEvent.ServerTickEvent event)
+//    {
+//        if (!lagMitigation) return;
+//        MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+//        if (server.getTickCounter() % 100 == 0)
+//        {
+//            StringBuilder sb = new StringBuilder().append(server.getTickCounter());
+//            for (long l : server.tickTimeArray) sb.append(',').append(l);
+//            sb.append('\n');
+//            pw.write(sb.toString());
+//            pw.flush();
+//        }
+//    }
+
+//    @SubscribeEvent(priority = EventPriority.HIGHEST)
+//    public void livingUpdateEvent(LivingEvent.LivingUpdateEvent event)
+//    {
+//        EntityLivingBase elb = event.getEntityLiving();
+//        if (elb.worldObj.isRemote || elb instanceof EntityPlayer || !lagMitigation) return;
+//        if (elb.getControllingPassenger() != null) return;
+////        if ((tps <= 15 && elb instanceof EntityAnimal) || (tps <= 12 && elb instanceof EntityMob)) event.setCanceled(true);
+//    }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void itemTooltipEventHandler(ItemTooltipEvent event)
