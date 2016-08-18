@@ -88,7 +88,7 @@ task deobfJar(type: Jar, dependsOn: 'jar') {
     classifier "dev"
     appendix = project.minecraft.version
     manifest {
-        attributes 'FMLAT': 'D3Core_at.cfg',
+        attributes 'FMLAT': 'D3Core_at.cfg'//,
 //                'FMLCorePluginContainsFMLMod': 'true',
 //                'FMLCorePlugin': 'net.doubledoordev.d3core.asm.D3CoreMod'
     }
@@ -99,7 +99,7 @@ sourceJar {
     classifier "src"
     appendix = project.minecraft.version
     manifest {
-        attributes 'FMLAT': 'D3Core_at.cfg',
+        attributes 'FMLAT': 'D3Core_at.cfg'//,
 //                'FMLCorePluginContainsFMLMod': 'true',
 //                'FMLCorePlugin': 'net.doubledoordev.d3core.asm.D3CoreMod'
     }
@@ -110,7 +110,7 @@ jar {
     exclude("com/**")
     appendix = project.minecraft.version
     manifest {
-        attributes 'FMLAT': 'D3Core_at.cfg',
+        attributes 'FMLAT': 'D3Core_at.cfg'//,
 //                'FMLCorePluginContainsFMLMod': 'true',
 //                'FMLCorePlugin': 'net.doubledoordev.d3core.asm.D3CoreMod'
 
