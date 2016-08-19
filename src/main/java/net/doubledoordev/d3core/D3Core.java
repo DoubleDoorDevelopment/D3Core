@@ -85,9 +85,10 @@ public class D3Core
         logger = event.getModLog();
 
         MinecraftForge.EVENT_BUS.register(this);
-        MinecraftForge.EVENT_BUS.register(LanguageHelper.I);
         MinecraftForge.EVENT_BUS.register(EventHandler.I);
         MinecraftForge.EVENT_BUS.register(VOID_REFUNDS);
+
+        if (event.getSide().isClient()) MinecraftForge.EVENT_BUS.register(LanguageHelper.I);
 
         folder = new File(event.getModConfigurationDirectory(), MODID);
         //noinspection ResultOfMethodCallIgnored
