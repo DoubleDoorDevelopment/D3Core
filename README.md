@@ -14,6 +14,8 @@ If you want to add crafting / repair materials to *existing* tool materials, you
 
 The itemstack regex pattern is:`^(?:(?<mod>.*):)?(?<name>.*?) ?(?<meta>\*|\d+)? ?(?<stacksize>\d+)?$`. Example: `[modid:]item_name [meta] [stacksize]`
 
+Due to Vanilla Limitation™ you can't really use MetaData based ingots in your repair materials. I suggest using Mine/Crafttweaker and you can't always use the anvil to repair (combine crafting only).
+
 Document structure example:
 
 ```json
