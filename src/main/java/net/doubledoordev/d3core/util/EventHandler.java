@@ -339,13 +339,13 @@ public class EventHandler
 
         BlockPos blockPos = new BlockPos((int)(player.posX),(int)(player.posY),(int)(player.posZ));
 
-        if (blockPos.getX() < 0) blockPos.add(-1,0,0);
-        if (blockPos.getZ() < 0) blockPos.add(0,0,-1);
+        if (blockPos.getX() < 0) blockPos = blockPos.add(-1,0,0);
+        if (blockPos.getZ() < 0) blockPos = blockPos.add(0,0,-1);
 
         int limiter = world.getActualHeight() * 2;
 
-        while (world.getBlockState(blockPos).getMaterial() == Material.WATER && --limiter != 0) blockPos.add(0,1,0);
-        while (world.getBlockState(blockPos).getMaterial() == Material.AIR && --limiter != 0) blockPos.add(0,-1,0);
+        while (world.getBlockState(blockPos).getMaterial() == Material.WATER && --limiter != 0) blockPos = blockPos.add(0,1,0);
+        while (world.getBlockState(blockPos).getMaterial() == Material.AIR && --limiter != 0) blockPos = blockPos.add(0,-1,0);
         if (limiter == 0) return;
         if (world.getBlockState(blockPos).getMaterial() == Material.WATER)
         {
