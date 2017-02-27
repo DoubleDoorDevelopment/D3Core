@@ -172,7 +172,7 @@ public class EventHandler
             if (state != null && state.getBlock() != Blocks.AIR)
             {
                 ItemStack stack = new ItemStack(state.getBlock(), 1, state.getBlock().getMetaFromState(state));
-                event.getDrops().add(new EntityItem(entityEnderman.worldObj, entityEnderman.posX, entityEnderman.posY, entityEnderman.posZ, stack));
+                event.getDrops().add(new EntityItem(entityEnderman.world, entityEnderman.posX, entityEnderman.posY, entityEnderman.posZ, stack));
             }
         }
     }
@@ -182,7 +182,7 @@ public class EventHandler
     {
         if (event.getEntityLiving() instanceof EntityPlayer && printDeathCoords)
         {
-            TextComponentString posText = new TextComponentString("X: " + MathHelper.floor_double(event.getEntityLiving().posX) + " Y: " + MathHelper.floor_double(event.getEntityLiving().posY + 0.5d) + " Z: " + MathHelper.floor_double(event.getEntityLiving().posZ));
+            TextComponentString posText = new TextComponentString("X: " + MathHelper.floor(event.getEntityLiving().posX) + " Y: " + MathHelper.floor(event.getEntityLiving().posY + 0.5d) + " Z: " + MathHelper.floor(event.getEntityLiving().posZ));
             try
             {
                 MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
@@ -196,9 +196,8 @@ public class EventHandler
             catch (Exception ignored)
             {
 
-            }
-
-            ((EntityPlayer) event.getEntityLiving()).addChatComponentMessage(new TextComponentString("You died at ").setStyle(new Style().setColor(TextFormatting.AQUA)).appendSibling(posText));
+            }            
+            ((EntityPlayer) event.getEntityLiving()).sendMessage(new TextComponentString("You died at ").setStyle(new Style().setColor(TextFormatting.AQUA)).appendSibling(posText));
         }
     }
 
@@ -309,11 +308,11 @@ public class EventHandler
                 String txt = FileUtils.readFileToString(file);
                 try
                 {
-                    event.player.addChatMessage(ITextComponent.Serializer.jsonToComponent(txt));
+                    event.player.sendMessage(ITextComponent.Serializer.jsonToComponent(txt));
                 }
                 catch (JsonParseException jsonparseexception)
                 {
-                    event.player.addChatMessage(new TextComponentString(txt));
+                    event.player.sendMessage(new TextComponentString(txt));
                 }
             }
             catch (IOException e)
@@ -335,7 +334,7 @@ public class EventHandler
 
     private void lilypad(EntityPlayer player)
     {
-        World world = player.worldObj;
+        World world = player.world;
 
         BlockPos blockPos = new BlockPos((int)(player.posX),(int)(player.posY),(int)(player.posZ));
 

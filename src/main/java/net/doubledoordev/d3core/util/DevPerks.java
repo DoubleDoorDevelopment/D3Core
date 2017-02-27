@@ -37,6 +37,7 @@ import com.google.gson.JsonParser;
 import net.doubledoordev.d3core.D3Core;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -90,7 +91,7 @@ public class DevPerks
         int meta = data.has("meta") ? data.get("meta").getAsInt() : defaultMeta;
         int size = data.has("size") ? data.get("size").getAsInt() : defaultStacksize;
         ItemStack stack = GameRegistry.makeItemStack(data.get("name").getAsString(), size, meta, null);
-        if (stack == null) return null;
+        if (stack == ItemStack.EMPTY) return null;
         if (data.has("display")) stack.setStackDisplayName(data.get("display").getAsString());
         if (data.has("color"))
         {
@@ -219,12 +220,12 @@ public class DevPerks
 
     private void doHat(JsonObject perk, EntityPlayer player)
     {
-        if (perk.has("hat") && (player.inventory.armorInventory[3] == null || player.inventory.armorInventory[3].stackSize == 0))
+        if (perk.has("hat") && (player.getItemStackFromSlot(EntityEquipmentSlot.HEAD) == ItemStack.EMPTY || player.getItemStackFromSlot(EntityEquipmentSlot.HEAD).getCount() == 0))
         {
             ItemStack hat = getItemStackFromJson(perk.getAsJsonObject("hat"), 0, 0);
-            if (hat == null) return;
-            hat.stackSize = 0;
-            player.inventory.armorInventory[3] = hat;
+            if (hat == ItemStack.EMPTY) return;
+            hat.setCount(0);
+            player.setItemStackToSlot(EntityEquipmentSlot.HEAD, hat);
         }
     }
 
@@ -241,7 +242,7 @@ public class DevPerks
                 if (perk.has("drop"))
                 {
                     ItemStack stack = getItemStackFromJson(perk.getAsJsonObject("drop"), 0, 1);
-                    if (stack == null) return;
+                    if (stack == ItemStack.EMPTY) return;
                     event.getDrops().add(new EntityItem(event.getEntityPlayer().getEntityWorld(), event.getEntityPlayer().posX, event.getEntityPlayer().posY, event.getEntityPlayer().posZ, stack));
                 }
             }
