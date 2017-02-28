@@ -49,7 +49,7 @@ import java.util.regex.Pattern;
 @SuppressWarnings("WeakerAccess")
 public class CoreConstants
 {
-    public static final String MODID = "D3Core";
+    public static final String MODID = "d3core";
     public static final String NAME = "D³ Core";
     public static final String BASE_URL = "http://doubledoordev.net/";
     public static final String PERKS_URL = BASE_URL + "perks.json";
@@ -108,7 +108,7 @@ public class CoreConstants
             NBTTagCompound root = new NBTTagCompound();
             root.setTag("Fireworks", fireworks);
             itemStack.setTagCompound(root);
-            target.worldObj.spawnEntityInWorld(new EntityFireworkRocket(target.worldObj, target.posX + CoreConstants.RANDOM.nextInt(rad) - rad / 2.0, target.posY, target.posZ + CoreConstants.RANDOM.nextInt(rad) - rad / 2.0, itemStack));
+            target.world.spawnEntity(new EntityFireworkRocket(target.world, target.posX + CoreConstants.RANDOM.nextInt(rad) - rad / 2.0, target.posY, target.posZ + CoreConstants.RANDOM.nextInt(rad) - rad / 2.0, itemStack));
         }
     }
 }

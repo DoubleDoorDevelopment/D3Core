@@ -52,13 +52,13 @@ import java.io.IOException;
 public class CommandSetLoginMessage extends CommandBase
 {
     @Override
-    public String getCommandName()
+    public String getName()
     {
         return "setloginmessage";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender p_71518_1_)
+    public String getUsage(ICommandSender p_71518_1_)
     {
         return "/setloginmessage <raw json message> OR /setloginmessage <text> OR /setloginmessage";
     }
@@ -72,7 +72,7 @@ public class CommandSetLoginMessage extends CommandBase
 
             if (file.exists()) //noinspection ResultOfMethodCallIgnored
                 file.delete();
-            sender.addChatMessage(new TextComponentTranslation("d3.core.cmd.setloginmessage.removed"));
+            sender.sendMessage(new TextComponentTranslation("d3.core.cmd.setloginmessage.removed"));
         }
         else
         {
@@ -86,14 +86,14 @@ public class CommandSetLoginMessage extends CommandBase
                 e.printStackTrace();
                 throw new CommandException(e.getMessage());
             }
-            sender.addChatMessage(new TextComponentTranslation("d3.core.cmd.setloginmessage.success"));
+            sender.sendMessage(new TextComponentTranslation("d3.core.cmd.setloginmessage.success"));
             try
             {
-                sender.addChatMessage(ITextComponent.Serializer.jsonToComponent(txt));
+                sender.sendMessage(ITextComponent.Serializer.jsonToComponent(txt));
             }
             catch (JsonParseException jsonparseexception)
             {
-                sender.addChatMessage(new TextComponentString(txt));
+                sender.sendMessage(new TextComponentString(txt));
             }
         }
     }

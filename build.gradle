@@ -40,9 +40,9 @@ archivesBaseName = 'D3Core'
 def githuborg = 'DoubleDoorDevelopment'
 def description = 'DoubleDoorDevelopment Core'
 minecraft {
-    version = "1.9.4-12.17.0.1976"
+    version = "1.11.2-13.20.0.2228"
     runDir = "jars"
-    mappings = "stable_26"
+    mappings = "snapshot_20161220"
 }
 
 if (System.getenv().BUILD_NUMBER != null) version += "." + System.getenv().BUILD_NUMBER

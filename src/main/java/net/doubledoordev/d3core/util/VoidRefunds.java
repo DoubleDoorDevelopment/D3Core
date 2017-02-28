@@ -71,7 +71,7 @@ public class VoidRefunds
     public void livingDeathEvent(LivingDeathEvent event)
     {
         if (FMLCommonHandler.instance().getEffectiveSide().isClient()) return;
-        if (event.getSource() != DamageSource.outOfWorld || !(event.getEntity() instanceof EntityPlayer)) return;
+        if (event.getSource() != DamageSource.OUT_OF_WORLD || !(event.getEntity() instanceof EntityPlayer)) return;
         if (event.getEntityLiving().lastDamage >= (Float.MAX_VALUE / 2)) return; // try to ignore /kill command
         for (int dim : voidRefundDimensions)
         {
