@@ -106,7 +106,7 @@ public class Materials
         for (ToolMaterial material : ToolMaterial.values())
         {
             ItemStack stack = itemStackMap.get(material.name().toLowerCase());
-            if (stack == ItemStack.EMPTY) continue;
+            if (stack == ItemStack.EMPTY || material.getRepairItemStack() != ItemStack.EMPTY) continue;
             material.setRepairItem(stack);
         }
     }
