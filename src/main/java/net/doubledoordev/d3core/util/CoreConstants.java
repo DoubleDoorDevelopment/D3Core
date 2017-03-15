@@ -50,7 +50,7 @@ import java.util.regex.Pattern;
 public class CoreConstants
 {
     public static final String MODID = "d3core";
-    public static final String NAME = "D³ Core";
+    public static final String NAME = "D³Core";
     public static final String BASE_URL = "http://doubledoordev.net/";
     public static final String PERKS_URL = BASE_URL + "perks.json";
     public static final String UPDATE_URL = BASE_URL + MODID + ".json";

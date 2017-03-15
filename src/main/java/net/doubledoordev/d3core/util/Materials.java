@@ -93,11 +93,17 @@ public class Materials
                 continue;
             }
             ItemStack stack = new ItemStack(item, stacksize, meta);
+            if (stack.isEmpty()) // Technically, the previous if should have failed, but I'm not taking chances here.
+            {
+                D3Core.getLogger().error("Entry in materials.json {} invalid. Item {}:{} does not exist.", entry, mod, name);
+                stop = true;
+                continue;
+            }
             itemStackMap.put(entry.getKey().toLowerCase(), stack);
         }
         if (stop)
         {
-            D3Core.getLogger().error("The proper format for materials.json entries is (in regex): {}", CoreConstants.PATTERN_ITEMSTACK.pattern());
+            D3Core.getLogger().fatal("The proper format for materials.json entries is (in regex): {}", CoreConstants.PATTERN_ITEMSTACK.pattern());
             RuntimeException e = new RuntimeException("You have invalid entries in your materials.json file. Check the log for more info.");
             e.setStackTrace(new StackTraceElement[0]); // No need for this
             throw e;
@@ -106,8 +112,22 @@ public class Materials
         for (ToolMaterial material : ToolMaterial.values())
         {
             ItemStack stack = itemStackMap.get(material.name().toLowerCase());
-            if (stack == ItemStack.EMPTY || material.getRepairItemStack() != ItemStack.EMPTY) continue;
+            if (stack == null) continue; // null if no entry in map
+
+            if (!material.getRepairItemStack().isEmpty()) // No longer allowed by Forge.
+            {
+                D3Core.getLogger().fatal("Material {} already has {} as repair material. You cannot override it.", material.name(), material.getRepairItemStack());
+                stop = true;
+                continue;
+            }
             material.setRepairItem(stack);
+        }
+        if (stop)
+        {
+            D3Core.getLogger().fatal("You tried to set the repair stack of a ToolMaterial that already has one. This is not allowed by Forge.");
+            RuntimeException e = new RuntimeException("You tried to set the repair stack of a ToolMaterial that already has one. This is not allowed by Forge. Check the log for more info.");
+            e.setStackTrace(new StackTraceElement[0]); // No need for this
+            throw e;
         }
     }
 }
