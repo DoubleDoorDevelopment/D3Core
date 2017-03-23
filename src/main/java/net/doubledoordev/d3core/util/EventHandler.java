@@ -137,7 +137,7 @@ public class EventHandler
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void itemTooltipEventHandler(ItemTooltipEvent event)
     {
-        if (event.isShowAdvancedItemTooltips())
+        if (event.isShowAdvancedItemTooltips() && !event.getItemStack().isEmpty())
         {
             if (enableStringID) event.getToolTip().add(TextFormatting.DARK_AQUA + event.getItemStack().getItem().getRegistryName().toString());
             if (enableUnlocalizedName) event.getToolTip().add(TextFormatting.DARK_GREEN + event.getItemStack().getUnlocalizedName());
@@ -197,7 +197,7 @@ public class EventHandler
             {
 
             }            
-            ((EntityPlayer) event.getEntityLiving()).sendMessage(new TextComponentString("You died at ").setStyle(new Style().setColor(TextFormatting.AQUA)).appendSibling(posText));
+            event.getEntityLiving().sendMessage(new TextComponentString("You died at ").setStyle(new Style().setColor(TextFormatting.AQUA)).appendSibling(posText));
         }
     }
 
@@ -215,7 +215,6 @@ public class EventHandler
     {
         if (D3Core.isAprilFools())
         {
-
             Style style = event.getComponent().getStyle();
             float chance = 0.25f;
             if (CoreConstants.RANDOM.nextFloat() < chance)
