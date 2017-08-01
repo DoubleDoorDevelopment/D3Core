@@ -186,11 +186,17 @@ public class EventHandler
             try
             {
                 MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-                if (!server.getCommandManager().getPossibleCommands(event.getEntityLiving()).contains(server.getCommandManager().getCommands().get("tp")))
+                if (server.getCommandManager().getPossibleCommands(event.getEntityLiving()).contains(server.getCommandManager().getCommands().get("tp")))
                 {
                     posText.setStyle(new Style().setItalic(true)
                             .setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponentString("Click to teleport!")))
-                            .setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tp " + event.getEntityLiving().posX + " " + (event.getEntityLiving().posY + 0.5d) + " " + event.getEntityLiving().posZ)));
+                            .setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tp " + MathHelper.floor(event.getEntityLiving().posX) + " " + MathHelper.floor(event.getEntityLiving().posY + 0.5d) + " " + MathHelper.floor(event.getEntityLiving().posZ))));
+                }
+                if (server.getCommandManager().getPossibleCommands(event.getEntityLiving()).contains(server.getCommandManager().getCommands().get("tpx")))
+                {
+                    posText.setStyle(new Style().setItalic(true)
+                            .setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponentString("Click to teleport!")))
+                            .setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpx " + ((EntityPlayer) event.getEntityLiving()).dimension + " " + MathHelper.floor(event.getEntityLiving().posX) + " " + MathHelper.floor(event.getEntityLiving().posY + 0.5d) + " " + MathHelper.floor(event.getEntityLiving().posZ))));
                 }
             }
             catch (Exception ignored)
