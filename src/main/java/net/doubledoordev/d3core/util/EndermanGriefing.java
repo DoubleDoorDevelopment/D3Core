@@ -45,7 +45,7 @@ import java.util.regex.Pattern;
 /**
  * @author Dries007
  */
-public class EndermanGriefing
+public final class EndermanGriefing
 {
     public static boolean disable;
     public static boolean dropCarrying;
@@ -54,6 +54,8 @@ public class EndermanGriefing
 
     private static HashMap<String, Boolean> reverseMap = new HashMap<>();
 
+    private EndermanGriefing() {}
+    
     public static void init()
     {
         if (disable)

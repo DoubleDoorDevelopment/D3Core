@@ -42,9 +42,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
-import net.minecraft.stats.StatisticsManagerServer;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.player.AchievementEvent;
+import net.minecraftforge.event.entity.player.AdvancementEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -165,40 +164,37 @@ public class DevPerks
     }
 
     @SubscribeEvent
-    public void achievementEvent(AchievementEvent event)
+    public void achievementEvent(AdvancementEvent event)
     {
         EntityPlayer player = event.getEntityPlayer();
         if (FMLCommonHandler.instance().getEffectiveSide().isServer() && player.getServer() != null)
         {
-            StatisticsManagerServer sms = player.getServer().getPlayerList().getPlayerStatsFile(player);
-            if (sms.canUnlockAchievement(event.getAchievement()) && !sms.hasAchievementUnlocked(event.getAchievement()))
+            try
             {
-                try
+                if (D3Core.isDebug()) update();
+                if (perks.has(player.getName()))
                 {
-                    if (D3Core.isDebug()) update();
-                    if (perks.has(player.getName()))
+                    JsonObject perk = perks.getAsJsonObject(player.getName());
+                    if (perk.has("fireworks"))
                     {
-                        JsonObject perk = perks.getAsJsonObject(player.getName());
-                        if (perk.has("fireworks"))
+                        JsonObject fw = perk.getAsJsonObject("fireworks");
+                        if (fw.has("achievement"))
                         {
-                            JsonObject fw = perk.getAsJsonObject("fireworks");
-                            if (fw.has("achievement"))
-                            {
-                                JsonObject obj = fw.getAsJsonObject("achievement");
-                                int rad = obj.has("radius") ? obj.get("radius").getAsInt() : 5;
-                                int rockets = obj.has("rockets") ? obj.get("rockets").getAsInt() : 5;
-                                CoreConstants.spawnRandomFireworks(player, rad + CoreConstants.RANDOM.nextInt(rad), rockets + CoreConstants.RANDOM.nextInt(rockets));
-                            }
+                            JsonObject obj = fw.getAsJsonObject("achievement");
+                            int rad = obj.has("radius") ? obj.get("radius").getAsInt() : 5;
+                            int rockets = obj.has("rockets") ? obj.get("rockets").getAsInt() : 5;
+                            CoreConstants.spawnRandomFireworks(player, rad + CoreConstants.RANDOM.nextInt(rad), rockets + CoreConstants.RANDOM.nextInt(rockets));
                         }
                     }
                 }
-                catch (Exception e)
-                {
-                    if (D3Core.isDebug()) e.printStackTrace();
-                }
+            }
+            catch (Exception e)
+            {
+                if (D3Core.isDebug()) e.printStackTrace();
             }
         }
     }
+    
 
     @SubscribeEvent
     public void cloneEvent(PlayerEvent.Clone event)

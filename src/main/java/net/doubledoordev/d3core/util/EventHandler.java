@@ -41,7 +41,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.stats.StatisticsManagerServer;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -56,11 +55,12 @@ import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.entity.player.AchievementEvent;
+import net.minecraftforge.event.entity.player.AdvancementEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -70,25 +70,28 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 /**
  * @author Dries007
  */
-public class EventHandler
+@Mod.EventBusSubscriber(modid = CoreConstants.MODID)
+public final class EventHandler
 {
-    public static final EventHandler I = new EventHandler();
 //    public boolean lagMitigation;
-    public boolean enableStringID;
-    public boolean enableUnlocalizedName;
-    public boolean enableOreDictionary;
-    public boolean enableBurnTime;
-    public boolean nosleep;
-    public boolean printDeathCoords = true;
-    public boolean claysTortureMode;
-    public boolean norain;
-    public boolean insomnia;
-    public boolean lilypad;
-    public boolean achievementFireworks;
+    public static boolean enableStringID;
+    public static boolean enableUnlocalizedName;
+    public static boolean enableOreDictionary;
+    public static boolean enableBurnTime;
+    public static boolean nosleep;
+    public static boolean printDeathCoords = true;
+    public static boolean claysTortureMode;
+    public static boolean norain;
+    public static boolean insomnia;
+    public static boolean lilypad;
+    public static boolean achievementFireworks;
+    
+    private static int aprilFoolsDelay = 0;
 
 //    private static int tps = 20;
 
@@ -135,9 +138,9 @@ public class EventHandler
 //    }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void itemTooltipEventHandler(ItemTooltipEvent event)
+    public static void itemTooltipEventHandler(ItemTooltipEvent event)
     {
-        if (event.isShowAdvancedItemTooltips() && !event.getItemStack().isEmpty())
+        if (event.getFlags().isAdvanced() && !event.getItemStack().isEmpty())
         {
             if (enableStringID) event.getToolTip().add(TextFormatting.DARK_AQUA + event.getItemStack().getItem().getRegistryName().toString());
             if (enableUnlocalizedName) event.getToolTip().add(TextFormatting.DARK_GREEN + event.getItemStack().getUnlocalizedName());
@@ -147,19 +150,17 @@ public class EventHandler
     }
 
     @SubscribeEvent
-    public void achievementEvent(AchievementEvent event)
+    public static void achievementEvent(AdvancementEvent event)
     {
         EntityPlayer player = event.getEntityPlayer();
         if (achievementFireworks && FMLCommonHandler.instance().getEffectiveSide().isServer() && player.getServer() != null)
         {
-            StatisticsManagerServer sms = player.getServer().getPlayerList().getPlayerStatsFile(player);
-            if (sms.canUnlockAchievement(event.getAchievement()) && !sms.hasAchievementUnlocked(event.getAchievement()))
-                CoreConstants.spawnRandomFireworks(player, 1, 1);
+            CoreConstants.spawnRandomFireworks(player, 1, 1);
         }
     }
 
-    @SubscribeEvent()
-    public void entityDeathEvent(LivingDropsEvent event)
+    @SubscribeEvent
+    public static void entityDeathEvent(LivingDropsEvent event)
     {
         if (event.getEntityLiving() instanceof EntityPlayer && claysTortureMode)
         {
@@ -177,8 +178,8 @@ public class EventHandler
         }
     }
 
-    @SubscribeEvent()
-    public void playerDeath(LivingDeathEvent event)
+    @SubscribeEvent
+    public static void playerDeath(LivingDeathEvent event)
     {
         if (event.getEntityLiving() instanceof EntityPlayer && printDeathCoords)
         {
@@ -207,8 +208,8 @@ public class EventHandler
         }
     }
 
-    @SubscribeEvent()
-    public void sleepEvent(PlayerSleepInBedEvent event)
+    @SubscribeEvent
+    public static void sleepEvent(PlayerSleepInBedEvent event)
     {
         if (nosleep || D3Core.isAprilFools())
         {
@@ -217,7 +218,7 @@ public class EventHandler
     }
 
     @SubscribeEvent
-    public void aprilFools(ServerChatEvent event)
+    public static void aprilFools(ServerChatEvent event)
     {
         if (D3Core.isAprilFools())
         {
@@ -254,7 +255,7 @@ public class EventHandler
     }
 
     @SubscribeEvent
-    public void aprilFools(PlayerEvent.NameFormat event)
+    public static void aprilFools(PlayerEvent.NameFormat event)
     {
         if (D3Core.isAprilFools())
         {
@@ -263,7 +264,7 @@ public class EventHandler
     }
 
     @SubscribeEvent
-    public void worldTickHandler(TickEvent.WorldTickEvent event)
+    public static void worldTickHandler(TickEvent.WorldTickEvent event)
     {
         if (event.side != Side.SERVER || event.phase != TickEvent.Phase.START) return;
 
@@ -277,9 +278,8 @@ public class EventHandler
         }
     }
 
-    private int aprilFoolsDelay = 0;
     @SubscribeEvent
-    public void playerTickHandler(TickEvent.PlayerTickEvent event)
+    public static void playerTickHandler(TickEvent.PlayerTickEvent event)
     {
         if (event.side != Side.SERVER || event.phase != TickEvent.Phase.START) return;
 
@@ -303,14 +303,14 @@ public class EventHandler
     }
 
     @SubscribeEvent
-    public void playerLoggedInEvent(net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent event)
+    public static void playerLoggedInEvent(net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent event)
     {
         File file = new File(D3Core.getFolder(), "loginmessage.txt");
         if (file.exists())
         {
             try
             {
-                String txt = FileUtils.readFileToString(file);
+                String txt = FileUtils.readFileToString(file, Charset.defaultCharset());
                 try
                 {
                     event.player.sendMessage(ITextComponent.Serializer.jsonToComponent(txt));
@@ -331,13 +331,13 @@ public class EventHandler
     }
 
     @SubscribeEvent
-    public void playerRespawnEvent(net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent event)
+    public static void playerRespawnEvent(net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent event)
     {
         if (lilypad) lilypad(event.player);
         if (D3Core.isAprilFools()) CoreConstants.spawnRandomFireworks(event.player, 1 + CoreConstants.RANDOM.nextInt(5), 1 + CoreConstants.RANDOM.nextInt(5));
     }
 
-    private void lilypad(EntityPlayer player)
+    private static void lilypad(EntityPlayer player)
     {
         World world = player.world;
 

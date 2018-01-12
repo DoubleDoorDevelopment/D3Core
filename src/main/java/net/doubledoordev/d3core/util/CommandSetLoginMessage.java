@@ -44,6 +44,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 /**
  * @author Dries007
@@ -79,7 +80,7 @@ public class CommandSetLoginMessage extends CommandBase
             String txt = buildString(args, 0);
             try
             {
-                FileUtils.writeStringToFile(file, txt);
+                FileUtils.writeStringToFile(file, txt, Charset.defaultCharset());
             }
             catch (IOException e)
             {
