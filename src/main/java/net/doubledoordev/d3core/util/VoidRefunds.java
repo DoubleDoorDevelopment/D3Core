@@ -37,6 +37,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
@@ -49,18 +50,18 @@ import static net.doubledoordev.d3core.util.CoreConstants.MODID;
 /**
  * @author Dries007
  */
-public class VoidRefunds
+@Mod.EventBusSubscriber(modid = CoreConstants.MODID)
+public final class VoidRefunds
 {
-    public static final VoidRefunds VOID_REFUNDS = new VoidRefunds();
-    private int[] voidRefundDimensions;
+    private static int[] voidRefundDimensions;
 
-    private final HashMap<UUID, InventoryPlayer> map = new HashMap<>();
+    private static final HashMap<UUID, InventoryPlayer> map = new HashMap<>();
 
     private VoidRefunds()
     {
     }
 
-    public void config(Configuration configuration)
+    public static void config(Configuration configuration)
     {
         final String catVoidDeaths = MODID + ".VoidDeaths";
         configuration.addCustomCategoryComment(catVoidDeaths, "In these dimensions, when you die to void damage, you will keep your items.");
@@ -68,7 +69,7 @@ public class VoidRefunds
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void livingDeathEvent(LivingDeathEvent event)
+    public static void livingDeathEvent(LivingDeathEvent event)
     {
         if (FMLCommonHandler.instance().getEffectiveSide().isClient()) return;
         if (event.getSource() != DamageSource.OUT_OF_WORLD || !(event.getEntity() instanceof EntityPlayer)) return;
@@ -86,7 +87,7 @@ public class VoidRefunds
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void playerRespawnEvent(PlayerEvent.PlayerRespawnEvent event)
+    public static void playerRespawnEvent(PlayerEvent.PlayerRespawnEvent event)
     {
         if (FMLCommonHandler.instance().getEffectiveSide().isClient()) return;
         InventoryPlayer oldInventory = map.get(event.player.getPersistentID());

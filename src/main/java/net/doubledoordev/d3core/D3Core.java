@@ -53,7 +53,6 @@ import java.io.IOException;
 import java.util.Calendar;
 
 import static net.doubledoordev.d3core.util.CoreConstants.*;
-import static net.doubledoordev.d3core.util.VoidRefunds.VOID_REFUNDS;
 
 /**
  * @author Dries007
@@ -85,10 +84,6 @@ public class D3Core
         logger = event.getModLog();
 
         MinecraftForge.EVENT_BUS.register(this);
-        MinecraftForge.EVENT_BUS.register(EventHandler.I);
-        MinecraftForge.EVENT_BUS.register(VOID_REFUNDS);
-
-        if (event.getSide().isClient()) MinecraftForge.EVENT_BUS.register(LanguageHelper.I);
 
         folder = new File(event.getModConfigurationDirectory(), MODID);
         //noinspection ResultOfMethodCallIgnored
@@ -144,13 +139,13 @@ public class D3Core
 
         debug = configuration.getBoolean("isDebug", MODID, debug, "Enable isDebug mode", "d3.core.config.isDebug");
         silliness = configuration.getBoolean("silliness", MODID, silliness, "Enable silliness\nBut seriously, you can disable name changes, drops and block helmets with this setting.", "d3.core.config.silliness");
-        EventHandler.I.norain = configuration.getBoolean("norain", MODID, EventHandler.I.norain, "No more rain if set to true.", "d3.core.config.norain");
-        EventHandler.I.insomnia = configuration.getBoolean("insomnia", MODID, EventHandler.I.insomnia, "No more daytime when players sleep if set to true.", "d3.core.config.insomnia");
-        EventHandler.I.lilypad = configuration.getBoolean("lilypad", MODID, EventHandler.I.lilypad, "Spawn the player on a lilypad when in or above water.", "d3.core.config.lilypad");
-        EventHandler.I.achievementFireworks = configuration.getBoolean("achievementFireworks", MODID, EventHandler.I.achievementFireworks, "Achievement = Fireworks", "d3.core.config.achievementFireworks");
-        EventHandler.I.nosleep = configuration.getBoolean("nosleep", MODID, EventHandler.I.nosleep, "No sleep at all", "d3.core.config.nosleep");
-        EventHandler.I.printDeathCoords = configuration.getBoolean("printDeathCoords", MODID, EventHandler.I.printDeathCoords, "Print your death coordinates in chat (client side)", "d3.core.config.printDeathCoords");
-        EventHandler.I.claysTortureMode = configuration.getBoolean("claysTortureMode", MODID, EventHandler.I.claysTortureMode, "Deletes all drops on death.", "d3.core.config.claystorturemode");
+        EventHandler.norain = configuration.getBoolean("norain", MODID, EventHandler.norain, "No more rain if set to true.", "d3.core.config.norain");
+        EventHandler.insomnia = configuration.getBoolean("insomnia", MODID, EventHandler.insomnia, "No more daytime when players sleep if set to true.", "d3.core.config.insomnia");
+        EventHandler.lilypad = configuration.getBoolean("lilypad", MODID, EventHandler.lilypad, "Spawn the player on a lilypad when in or above water.", "d3.core.config.lilypad");
+        EventHandler.achievementFireworks = configuration.getBoolean("achievementFireworks", MODID, EventHandler.achievementFireworks, "Achievement = Fireworks", "d3.core.config.achievementFireworks");
+        EventHandler.nosleep = configuration.getBoolean("nosleep", MODID, EventHandler.nosleep, "No sleep at all", "d3.core.config.nosleep");
+        EventHandler.printDeathCoords = configuration.getBoolean("printDeathCoords", MODID, EventHandler.printDeathCoords, "Print your death coordinates in chat (client side)", "d3.core.config.printDeathCoords");
+        EventHandler.claysTortureMode = configuration.getBoolean("claysTortureMode", MODID, EventHandler.claysTortureMode, "Deletes all drops on death.", "d3.core.config.claystorturemode");
 //        EventHandler.I.lagMitigation = configuration.getBoolean("lagMitigation", MODID, EventHandler.I.lagMitigation, "Based on server TPS make not all entities tick every server tick.", "d3.core.config.lagmitigation");
         aprilFools = configuration.getBoolean("aprilFools", MODID, aprilFools, "What would this do...");
         getDevPerks().update(silliness);
@@ -158,10 +153,10 @@ public class D3Core
         final String catTooltips = MODID + ".tooltips";
         configuration.setCategoryLanguageKey(catTooltips, "d3.core.config.tooltips").addCustomCategoryComment(catTooltips, "d3.core.config.tooltips");
 
-        EventHandler.I.enableStringID = configuration.getBoolean("enableStringID", catTooltips, true, "Example: minecraft:gold_ore", "d3.core.config.tooltips.enableStringID");
-        EventHandler.I.enableUnlocalizedName = configuration.getBoolean("enableUnlocalizedName", catTooltips, true, "Example: tile.oreGold", "d3.core.config.tooltips.enableUnlocalizedName");
-        EventHandler.I.enableOreDictionary = configuration.getBoolean("enableOreDictionary", catTooltips, true, "Example: oreGold", "d3.core.config.tooltips.enableOreDictionary");
-        EventHandler.I.enableBurnTime = configuration.getBoolean("enableBurnTime", catTooltips, true, "Example: 300 ticks", "d3.core.config.tooltips.enableBurnTime");
+        EventHandler.enableStringID = configuration.getBoolean("enableStringID", catTooltips, true, "Example: minecraft:gold_ore", "d3.core.config.tooltips.enableStringID");
+        EventHandler.enableUnlocalizedName = configuration.getBoolean("enableUnlocalizedName", catTooltips, true, "Example: tile.oreGold", "d3.core.config.tooltips.enableUnlocalizedName");
+        EventHandler.enableOreDictionary = configuration.getBoolean("enableOreDictionary", catTooltips, true, "Example: oreGold", "d3.core.config.tooltips.enableOreDictionary");
+        EventHandler.enableBurnTime = configuration.getBoolean("enableBurnTime", catTooltips, true, "Example: 300 ticks", "d3.core.config.tooltips.enableBurnTime");
 
         {
             final String catEnderGriefing = MODID + ".EndermanGriefing";
@@ -183,7 +178,7 @@ public class D3Core
             if (pastPost) EndermanGriefing.init();
         }
 
-        VOID_REFUNDS.config(configuration);
+        VoidRefunds.config(configuration);
 
         if (configuration.hasChanged()) configuration.save();
     }

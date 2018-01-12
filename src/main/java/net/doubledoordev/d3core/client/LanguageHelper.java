@@ -32,6 +32,7 @@
 package net.doubledoordev.d3core.client;
 
 import net.doubledoordev.d3core.events.D3LanguageInjectEvent;
+import net.doubledoordev.d3core.util.CoreConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
@@ -42,7 +43,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.translation.LanguageMap;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -55,10 +58,10 @@ import java.util.Map;
  * It also figures out the maximum possible enchant level by setting an Enchantment on an actual ItemStack, since mojang code does weird casting.
  *
  */
-public class LanguageHelper
+@Mod.EventBusSubscriber(modid = CoreConstants.MODID, value = Side.CLIENT)
+public final class LanguageHelper
 {
     private final static LinkedHashMap<String, Integer> ROMAN_NUMERALS = new LinkedHashMap<>();
-    public static final LanguageHelper I = new LanguageHelper();
 
     static
     {
@@ -78,6 +81,8 @@ public class LanguageHelper
     }
     private static final String PREFIX = "enchantment.level.";
 
+    private LanguageHelper() {}
+    
     public static void run()
     {
         //noinspection NullableProblems
@@ -111,7 +116,7 @@ public class LanguageHelper
     }
 
     @SubscribeEvent
-    public void d3LanguageInjectEvent(D3LanguageInjectEvent event)
+    public static void d3LanguageInjectEvent(D3LanguageInjectEvent event)
     {
         Enchantment enchantment = null;
         //noinspection StatementWithEmptyBody
