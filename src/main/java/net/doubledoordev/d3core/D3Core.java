@@ -50,7 +50,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Calendar;
 
 import static net.doubledoordev.d3core.util.CoreConstants.*;
 
@@ -146,8 +145,6 @@ public class D3Core
         EventHandler.nosleep = configuration.getBoolean("nosleep", MODID, EventHandler.nosleep, "No sleep at all", "d3.core.config.nosleep");
         EventHandler.printDeathCoords = configuration.getBoolean("printDeathCoords", MODID, EventHandler.printDeathCoords, "Print your death coordinates in chat (client side)", "d3.core.config.printDeathCoords");
         EventHandler.claysTortureMode = configuration.getBoolean("claysTortureMode", MODID, EventHandler.claysTortureMode, "Deletes all drops on death.", "d3.core.config.claystorturemode");
-//        EventHandler.I.lagMitigation = configuration.getBoolean("lagMitigation", MODID, EventHandler.I.lagMitigation, "Based on server TPS make not all entities tick every server tick.", "d3.core.config.lagmitigation");
-        aprilFools = configuration.getBoolean("aprilFools", MODID, aprilFools, "What would this do...");
         getDevPerks().update(silliness);
 
         final String catTooltips = MODID + ".tooltips";
@@ -191,12 +188,6 @@ public class D3Core
     public static boolean isDebug()
     {
         return instance.debug;
-    }
-
-    public static boolean isAprilFools()
-    {
-        //noinspection MagicConstant
-        return instance.aprilFools && Calendar.getInstance().get(Calendar.MONTH) == Calendar.APRIL && Calendar.getInstance().get(Calendar.DAY_OF_MONTH) == 1;
     }
 
     public static Configuration getConfig()

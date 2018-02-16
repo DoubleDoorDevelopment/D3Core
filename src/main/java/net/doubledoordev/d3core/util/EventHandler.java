@@ -41,7 +41,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
@@ -52,20 +51,15 @@ import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.util.text.event.HoverEvent;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.WorldInfo;
-import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.AdvancementEvent;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.oredict.OreDictionary;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -78,7 +72,6 @@ import java.nio.charset.Charset;
 @Mod.EventBusSubscriber(modid = CoreConstants.MODID)
 public final class EventHandler
 {
-//    public boolean lagMitigation;
     public static boolean enableStringID;
     public static boolean enableUnlocalizedName;
     public static boolean enableOreDictionary;
@@ -90,64 +83,8 @@ public final class EventHandler
     public static boolean insomnia;
     public static boolean lilypad;
     public static boolean achievementFireworks;
-    
-    private static int aprilFoolsDelay = 0;
-
-//    private static int tps = 20;
 
     private EventHandler() {}
-
-//    private static PrintWriter pw;
-//
-//    static
-//    {
-//        try
-//        {
-//            File f = new File("ticktimes.csv");
-//            f.createNewFile();
-//            pw = new PrintWriter(f);
-//        }
-//        catch (IOException e)
-//        {
-//            Throwables.propagate(e);
-//        }
-//    }
-
-//    @SubscribeEvent
-//    public void serverTickHandler(TickEvent.ServerTickEvent event)
-//    {
-//        if (!lagMitigation) return;
-//        MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-//        if (server.getTickCounter() % 100 == 0)
-//        {
-//            StringBuilder sb = new StringBuilder().append(server.getTickCounter());
-//            for (long l : server.tickTimeArray) sb.append(',').append(l);
-//            sb.append('\n');
-//            pw.write(sb.toString());
-//            pw.flush();
-//        }
-//    }
-
-//    @SubscribeEvent(priority = EventPriority.HIGHEST)
-//    public void livingUpdateEvent(LivingEvent.LivingUpdateEvent event)
-//    {
-//        EntityLivingBase elb = event.getEntityLiving();
-//        if (elb.worldObj.isRemote || elb instanceof EntityPlayer || !lagMitigation) return;
-//        if (elb.getControllingPassenger() != null) return;
-////        if ((tps <= 15 && elb instanceof EntityAnimal) || (tps <= 12 && elb instanceof EntityMob)) event.setCanceled(true);
-//    }
-
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void itemTooltipEventHandler(ItemTooltipEvent event)
-    {
-        if (event.getFlags().isAdvanced() && !event.getItemStack().isEmpty())
-        {
-            if (enableStringID) event.getToolTip().add(TextFormatting.DARK_AQUA + event.getItemStack().getItem().getRegistryName().toString());
-            if (enableUnlocalizedName) event.getToolTip().add(TextFormatting.DARK_GREEN + event.getItemStack().getUnlocalizedName());
-            if (enableOreDictionary) for (int id : OreDictionary.getOreIDs(event.getItemStack())) event.getToolTip().add(TextFormatting.DARK_PURPLE + OreDictionary.getOreName(id));
-            if (enableBurnTime && TileEntityFurnace.isItemFuel(event.getItemStack())) event.getToolTip().add(TextFormatting.GOLD + "Burns for " + TileEntityFurnace.getItemBurnTime(event.getItemStack()) + " ticks");
-        }
-    }
 
     @SubscribeEvent
     public static void achievementEvent(AdvancementEvent event)
@@ -211,55 +148,9 @@ public final class EventHandler
     @SubscribeEvent
     public static void sleepEvent(PlayerSleepInBedEvent event)
     {
-        if (nosleep || D3Core.isAprilFools())
+        if (nosleep)
         {
             event.setResult(EntityPlayer.SleepResult.OTHER_PROBLEM);
-        }
-    }
-
-    @SubscribeEvent
-    public static void aprilFools(ServerChatEvent event)
-    {
-        if (D3Core.isAprilFools())
-        {
-            Style style = event.getComponent().getStyle();
-            float chance = 0.25f;
-            if (CoreConstants.RANDOM.nextFloat() < chance)
-            {
-                style.setBold(true);
-                chance *= chance;
-            }
-            if (CoreConstants.RANDOM.nextFloat() < chance)
-            {
-                style.setItalic(true);
-                chance *= chance;
-            }
-            if (CoreConstants.RANDOM.nextFloat() < chance)
-            {
-                style.setUnderlined(true);
-                chance *= chance;
-            }
-            if (CoreConstants.RANDOM.nextFloat() < chance)
-            {
-                style.setStrikethrough(true);
-                chance *= chance;
-            }
-            if (CoreConstants.RANDOM.nextFloat() < chance)
-            {
-                style.setObfuscated(true);
-            }
-            style.setColor(TextFormatting.values()[CoreConstants.RANDOM.nextInt(TextFormatting.values().length)]);
-            event.getComponent().setStyle(style);
-
-        }
-    }
-
-    @SubscribeEvent
-    public static void aprilFools(PlayerEvent.NameFormat event)
-    {
-        if (D3Core.isAprilFools())
-        {
-            event.setDisplayname("§k" + event.getDisplayname());
         }
     }
 
@@ -290,16 +181,6 @@ public final class EventHandler
                 event.player.sleepTimer = 90;
             }
         }
-
-
-        if (D3Core.isAprilFools())
-        {
-            if (aprilFoolsDelay-- <= 0)
-            {
-                aprilFoolsDelay = 100 * (5 + CoreConstants.RANDOM.nextInt(FMLCommonHandler.instance().getMinecraftServerInstance().getCurrentPlayerCount()));
-                CoreConstants.spawnRandomFireworks(event.player, 1 + CoreConstants.RANDOM.nextInt(5), 1 + CoreConstants.RANDOM.nextInt(5));
-            }
-        }
     }
 
     @SubscribeEvent
@@ -327,14 +208,12 @@ public final class EventHandler
         }
 
         if (lilypad) lilypad(event.player);
-        if (D3Core.isAprilFools()) CoreConstants.spawnRandomFireworks(event.player, 1 + CoreConstants.RANDOM.nextInt(5), 1 + CoreConstants.RANDOM.nextInt(5));
     }
 
     @SubscribeEvent
     public static void playerRespawnEvent(net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent event)
     {
         if (lilypad) lilypad(event.player);
-        if (D3Core.isAprilFools()) CoreConstants.spawnRandomFireworks(event.player, 1 + CoreConstants.RANDOM.nextInt(5), 1 + CoreConstants.RANDOM.nextInt(5));
     }
 
     private static void lilypad(EntityPlayer player)

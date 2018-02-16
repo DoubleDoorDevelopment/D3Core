@@ -33,6 +33,7 @@ package net.doubledoordev.d3core.client;
 
 import net.doubledoordev.d3core.events.D3LanguageInjectEvent;
 import net.doubledoordev.d3core.util.CoreConstants;
+import net.doubledoordev.d3core.util.EventHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
@@ -41,11 +42,16 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.LanguageMap;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -135,6 +141,19 @@ public final class LanguageHelper
                 String val = romanNumerals(i);
                 event.map.put(key, val);
             }
+        }
+    }
+
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void itemTooltipEventHandler(ItemTooltipEvent event)
+    {
+        if (event.getFlags().isAdvanced() && !event.getItemStack().isEmpty())
+        {
+            if (EventHandler.enableStringID) event.getToolTip().add(TextFormatting.DARK_AQUA + event.getItemStack().getItem().getRegistryName().toString());
+            if (EventHandler.enableUnlocalizedName) event.getToolTip().add(TextFormatting.DARK_GREEN + event.getItemStack().getUnlocalizedName());
+            if (EventHandler.enableOreDictionary) for (int id : OreDictionary.getOreIDs(event.getItemStack())) event.getToolTip().add(TextFormatting.DARK_PURPLE + OreDictionary.getOreName(id));
+            if (EventHandler.enableBurnTime && TileEntityFurnace.isItemFuel(event.getItemStack())) event.getToolTip().add(TextFormatting.GOLD + "Burns for " + TileEntityFurnace.getItemBurnTime(event.getItemStack()) + " ticks");
         }
     }
 }
